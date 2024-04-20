@@ -1,0 +1,440 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="GestorTareasModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Castigo">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="255" />
+          <Property Name="Descripcion" Type="varchar" MaxLength="255" />
+          <Property Name="Plazo" Type="int" />
+        </EntityType>
+        <EntityType Name="Premio">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="255" />
+          <Property Name="Descripcion" Type="varchar" MaxLength="255" />
+          <Property Name="Puntos" Type="int" />
+        </EntityType>
+        <EntityType Name="Rol">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="Tarea">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="255" />
+          <Property Name="Plazo" Type="date" />
+          <Property Name="Puntos" Type="int" />
+          <Property Name="NivelDificultad" Type="varchar" MaxLength="255" />
+          <Property Name="Estado" Type="varchar" MaxLength="255" />
+          <Property Name="FechaInicio" Type="date" />
+          <Property Name="FechaFin" Type="date" />
+          <Property Name="Usuario_Id" Type="int" />
+          <Property Name="Castigo_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Usuario">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="255" />
+          <Property Name="Email" Type="varchar" MaxLength="255" />
+          <Property Name="Contraseña" Type="varchar" MaxLength="255" />
+          <Property Name="Telefono" Type="varchar" MaxLength="20" />
+          <Property Name="Puntos" Type="int" />
+          <Property Name="Imagen" Type="varchar" MaxLength="255" />
+          <Property Name="Rol_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Usuario_Castigo">
+          <Key>
+            <PropertyRef Name="Usuario_Id" />
+            <PropertyRef Name="Castigo_Id" />
+          </Key>
+          <Property Name="Usuario_Id" Type="int" Nullable="false" />
+          <Property Name="Castigo_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Usuario_Premio">
+          <Key>
+            <PropertyRef Name="Usuario_Id" />
+            <PropertyRef Name="Premio_Id" />
+          </Key>
+          <Property Name="Usuario_Id" Type="int" Nullable="false" />
+          <Property Name="Premio_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__Tarea__castigo_i__534D60F1">
+          <End Role="Castigo" Type="Self.Castigo" Multiplicity="1" />
+          <End Role="Tarea" Type="Self.Tarea" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Castigo">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Tarea">
+              <PropertyRef Name="Castigo_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Tarea__usuario_i__52593CB8">
+          <End Role="Usuario" Type="Self.Usuario" Multiplicity="0..1" />
+          <End Role="Tarea" Type="Self.Tarea" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usuario">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Tarea">
+              <PropertyRef Name="Usuario_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Usuario__rol_id__4BAC3F29">
+          <End Role="Rol" Type="Self.Rol" Multiplicity="1" />
+          <End Role="Usuario" Type="Self.Usuario" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Rol">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Usuario">
+              <PropertyRef Name="Rol_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Usuario_C__casti__5AEE82B9">
+          <End Role="Castigo" Type="Self.Castigo" Multiplicity="1" />
+          <End Role="Usuario_Castigo" Type="Self.Usuario_Castigo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Castigo">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Usuario_Castigo">
+              <PropertyRef Name="Castigo_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Usuario_C__usuar__59FA5E80">
+          <End Role="Usuario" Type="Self.Usuario" Multiplicity="1" />
+          <End Role="Usuario_Castigo" Type="Self.Usuario_Castigo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usuario">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Usuario_Castigo">
+              <PropertyRef Name="Usuario_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Usuario_P__premi__571DF1D5">
+          <End Role="Premio" Type="Self.Premio" Multiplicity="1" />
+          <End Role="Usuario_Premio" Type="Self.Usuario_Premio" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Premio">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Usuario_Premio">
+              <PropertyRef Name="Premio_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Usuario_P__usuar__5629CD9C">
+          <End Role="Usuario" Type="Self.Usuario" Multiplicity="1" />
+          <End Role="Usuario_Premio" Type="Self.Usuario_Premio" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usuario">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Usuario_Premio">
+              <PropertyRef Name="Usuario_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="GestorTareasModelStoreContainer">
+          <EntitySet Name="Castigo" EntityType="Self.Castigo" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Premio" EntityType="Self.Premio" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Rol" EntityType="Self.Rol" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tarea" EntityType="Self.Tarea" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Usuario" EntityType="Self.Usuario" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Usuario_Castigo" EntityType="Self.Usuario_Castigo" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Usuario_Premio" EntityType="Self.Usuario_Premio" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__Tarea__castigo_i__534D60F1" Association="Self.FK__Tarea__castigo_i__534D60F1">
+            <End Role="Castigo" EntitySet="Castigo" />
+            <End Role="Tarea" EntitySet="Tarea" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Tarea__usuario_i__52593CB8" Association="Self.FK__Tarea__usuario_i__52593CB8">
+            <End Role="Usuario" EntitySet="Usuario" />
+            <End Role="Tarea" EntitySet="Tarea" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Usuario__rol_id__4BAC3F29" Association="Self.FK__Usuario__rol_id__4BAC3F29">
+            <End Role="Rol" EntitySet="Rol" />
+            <End Role="Usuario" EntitySet="Usuario" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Usuario_C__casti__5AEE82B9" Association="Self.FK__Usuario_C__casti__5AEE82B9">
+            <End Role="Castigo" EntitySet="Castigo" />
+            <End Role="Usuario_Castigo" EntitySet="Usuario_Castigo" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Usuario_C__usuar__59FA5E80" Association="Self.FK__Usuario_C__usuar__59FA5E80">
+            <End Role="Usuario" EntitySet="Usuario" />
+            <End Role="Usuario_Castigo" EntitySet="Usuario_Castigo" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Usuario_P__premi__571DF1D5" Association="Self.FK__Usuario_P__premi__571DF1D5">
+            <End Role="Premio" EntitySet="Premio" />
+            <End Role="Usuario_Premio" EntitySet="Usuario_Premio" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Usuario_P__usuar__5629CD9C" Association="Self.FK__Usuario_P__usuar__5629CD9C">
+            <End Role="Usuario" EntitySet="Usuario" />
+            <End Role="Usuario_Premio" EntitySet="Usuario_Premio" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="GestorTareasModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Castigo">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Nombre" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Descripcion" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Plazo" Type="Int32" />
+          <NavigationProperty Name="Tarea" Relationship="Self.FK__Tarea__castigo_i__534D60F1" FromRole="Castigo" ToRole="Tarea" />
+          <NavigationProperty Name="Usuario" Relationship="Self.Usuario_Castigo" FromRole="Castigo" ToRole="Usuario" />
+        </EntityType>
+        <EntityType Name="Premio">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Nombre" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Descripcion" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Puntos" Type="Int32" />
+          <NavigationProperty Name="Usuario" Relationship="Self.Usuario_Premio" FromRole="Premio" ToRole="Usuario" />
+        </EntityType>
+        <EntityType Name="Rol">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Nombre" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Usuario" Relationship="Self.FK__Usuario__rol_id__4BAC3F29" FromRole="Rol" ToRole="Usuario" />
+        </EntityType>
+        <EntityType Name="Tarea">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Nombre" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Plazo" Type="DateTime" Precision="0" />
+          <Property Name="Puntos" Type="Int32" />
+          <Property Name="NivelDificultad" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Estado" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="FechaInicio" Type="DateTime" Precision="0" />
+          <Property Name="FechaFin" Type="DateTime" Precision="0" />
+          <Property Name="Usuario_Id" Type="Int32" />
+          <Property Name="Castigo_Id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Castigo" Relationship="Self.FK__Tarea__castigo_i__534D60F1" FromRole="Tarea" ToRole="Castigo" />
+          <NavigationProperty Name="Usuario" Relationship="Self.FK__Tarea__usuario_i__52593CB8" FromRole="Tarea" ToRole="Usuario" />
+        </EntityType>
+        <EntityType Name="Usuario">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Nombre" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Contraseña" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Telefono" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Puntos" Type="Int32" />
+          <Property Name="Imagen" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Rol_Id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Rol" Relationship="Self.FK__Usuario__rol_id__4BAC3F29" FromRole="Usuario" ToRole="Rol" />
+          <NavigationProperty Name="Tarea" Relationship="Self.FK__Tarea__usuario_i__52593CB8" FromRole="Usuario" ToRole="Tarea" />
+          <NavigationProperty Name="Castigo" Relationship="Self.Usuario_Castigo" FromRole="Usuario" ToRole="Castigo" />
+          <NavigationProperty Name="Premio" Relationship="Self.Usuario_Premio" FromRole="Usuario" ToRole="Premio" />
+        </EntityType>
+        <Association Name="FK__Tarea__castigo_i__534D60F1">
+          <End Role="Castigo" Type="Self.Castigo" Multiplicity="1" />
+          <End Role="Tarea" Type="Self.Tarea" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Castigo">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Tarea">
+              <PropertyRef Name="Castigo_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Usuario__rol_id__4BAC3F29">
+          <End Role="Rol" Type="Self.Rol" Multiplicity="1" />
+          <End Role="Usuario" Type="Self.Usuario" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Rol">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Usuario">
+              <PropertyRef Name="Rol_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Tarea__usuario_i__52593CB8">
+          <End Role="Usuario" Type="Self.Usuario" Multiplicity="0..1" />
+          <End Role="Tarea" Type="Self.Tarea" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usuario">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Tarea">
+              <PropertyRef Name="Usuario_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Usuario_Castigo">
+          <End Role="Castigo" Type="Self.Castigo" Multiplicity="*" />
+          <End Role="Usuario" Type="Self.Usuario" Multiplicity="*" />
+        </Association>
+        <Association Name="Usuario_Premio">
+          <End Role="Premio" Type="Self.Premio" Multiplicity="*" />
+          <End Role="Usuario" Type="Self.Usuario" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="GestorTareasEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Castigo" EntityType="Self.Castigo" />
+          <EntitySet Name="Premio" EntityType="Self.Premio" />
+          <EntitySet Name="Rol" EntityType="Self.Rol" />
+          <EntitySet Name="Tarea" EntityType="Self.Tarea" />
+          <EntitySet Name="Usuario" EntityType="Self.Usuario" />
+          <AssociationSet Name="FK__Tarea__castigo_i__534D60F1" Association="Self.FK__Tarea__castigo_i__534D60F1">
+            <End Role="Castigo" EntitySet="Castigo" />
+            <End Role="Tarea" EntitySet="Tarea" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Usuario__rol_id__4BAC3F29" Association="Self.FK__Usuario__rol_id__4BAC3F29">
+            <End Role="Rol" EntitySet="Rol" />
+            <End Role="Usuario" EntitySet="Usuario" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Tarea__usuario_i__52593CB8" Association="Self.FK__Tarea__usuario_i__52593CB8">
+            <End Role="Usuario" EntitySet="Usuario" />
+            <End Role="Tarea" EntitySet="Tarea" />
+          </AssociationSet>
+          <AssociationSet Name="Usuario_Castigo" Association="Self.Usuario_Castigo">
+            <End Role="Castigo" EntitySet="Castigo" />
+            <End Role="Usuario" EntitySet="Usuario" />
+          </AssociationSet>
+          <AssociationSet Name="Usuario_Premio" Association="Self.Usuario_Premio">
+            <End Role="Premio" EntitySet="Premio" />
+            <End Role="Usuario" EntitySet="Usuario" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="GestorTareasModelStoreContainer" CdmEntityContainer="GestorTareasEntities">
+          <EntitySetMapping Name="Castigo">
+            <EntityTypeMapping TypeName="GestorTareasModel.Castigo">
+              <MappingFragment StoreEntitySet="Castigo">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="Plazo" ColumnName="Plazo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Premio">
+            <EntityTypeMapping TypeName="GestorTareasModel.Premio">
+              <MappingFragment StoreEntitySet="Premio">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="Puntos" ColumnName="Puntos" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Rol">
+            <EntityTypeMapping TypeName="GestorTareasModel.Rol">
+              <MappingFragment StoreEntitySet="Rol">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tarea">
+            <EntityTypeMapping TypeName="GestorTareasModel.Tarea">
+              <MappingFragment StoreEntitySet="Tarea">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="Plazo" ColumnName="Plazo" />
+                <ScalarProperty Name="Puntos" ColumnName="Puntos" />
+                <ScalarProperty Name="NivelDificultad" ColumnName="NivelDificultad" />
+                <ScalarProperty Name="Estado" ColumnName="Estado" />
+                <ScalarProperty Name="FechaInicio" ColumnName="FechaInicio" />
+                <ScalarProperty Name="FechaFin" ColumnName="FechaFin" />
+                <ScalarProperty Name="Usuario_Id" ColumnName="Usuario_Id" />
+                <ScalarProperty Name="Castigo_Id" ColumnName="Castigo_Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Usuario">
+            <EntityTypeMapping TypeName="GestorTareasModel.Usuario">
+              <MappingFragment StoreEntitySet="Usuario">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Contraseña" ColumnName="Contraseña" />
+                <ScalarProperty Name="Telefono" ColumnName="Telefono" />
+                <ScalarProperty Name="Puntos" ColumnName="Puntos" />
+                <ScalarProperty Name="Imagen" ColumnName="Imagen" />
+                <ScalarProperty Name="Rol_Id" ColumnName="Rol_Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="Usuario_Castigo" TypeName="GestorTareasModel.Usuario_Castigo" StoreEntitySet="Usuario_Castigo">
+            <EndProperty Name="Castigo">
+              <ScalarProperty Name="Id" ColumnName="Castigo_Id" />
+            </EndProperty>
+            <EndProperty Name="Usuario">
+              <ScalarProperty Name="Id" ColumnName="Usuario_Id" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="Usuario_Premio" TypeName="GestorTareasModel.Usuario_Premio" StoreEntitySet="Usuario_Premio">
+            <EndProperty Name="Premio">
+              <ScalarProperty Name="Id" ColumnName="Premio_Id" />
+            </EndProperty>
+            <EndProperty Name="Usuario">
+              <ScalarProperty Name="Id" ColumnName="Usuario_Id" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Ninguno" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
