@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Web;
 
 namespace WebApplicationGestorTareas.Models
 {
     public class PremioDto
     {
-        public PremioDto() 
-        { 
+        public PremioDto()
+        {
             this.Usuarios = new List<UsuarioDto>();
         }
         public int Id { get; set; }

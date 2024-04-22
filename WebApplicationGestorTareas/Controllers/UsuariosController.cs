@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using WebApplicationGestorTareas;
-using WebApplicationGestorTareas.Models;
 
 namespace WebApplicationGestorTareas.Controllers
 {
@@ -33,6 +26,71 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
+            return View(usuario);
+        }
+
+        // GET: ver mis premios / ver premios de un usuario
+        public ActionResult ObtenerPremios(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Usuario usuario = db.Usuario.Find(id);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+            return View(usuario.Premio);
+        }
+
+        // GET: ver mi premio / ver premio de un usuario
+        public ActionResult ObtenerPremio(int? idUsuario, int? idPremio)
+        {
+            if (idUsuario == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            if (idPremio == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Usuario usuario = db.Usuario.Find(idUsuario);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+            Premio premio = usuario.Premio.First(prem => prem.Id == idPremio);
+            return View(premio);
+        }
+
+        // DELETE: Usuarios/5/Premios/5
+        public ActionResult EliminarPremio(int? idUsuario, int? idPremio)
+        {
+            if (idUsuario == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            if (idPremio == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Usuario usuario = db.Usuario.Find(idUsuario);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+
+            Premio premio = usuario.Premio.First(prem => prem.Id == idPremio);
+            if (premio == null)
+            {
+                return HttpNotFound();
+            }
+            premio.Usuario.Remove(usuario);
+            usuario.Premio.Remove(premio);
+            db.SaveChanges();
             return View(usuario);
         }
 

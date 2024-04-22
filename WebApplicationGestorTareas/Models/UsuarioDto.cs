@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Web;
 
 namespace WebApplicationGestorTareas.Models
 {
@@ -31,7 +29,7 @@ namespace WebApplicationGestorTareas.Models
 
         public int Rol_Id { get; set; }
 
-        public  Rol Rol { get; set; }
+        public Rol Rol { get; set; }
 
         public List<TareaDto> Tareas { get; set; }
 

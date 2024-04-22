@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Web;
 
 namespace WebApplicationGestorTareas.Models
 {
@@ -28,9 +25,9 @@ namespace WebApplicationGestorTareas.Models
 
         public int Castigo_Id { get; set; }
 
-        public  CastigoDto Castigo { get; set; }
+        public CastigoDto Castigo { get; set; }
 
-        public  UsuarioDto Usuario { get; set; }
+        public UsuarioDto Usuario { get; set; }
     }
     public class TareaDBContext : DbContext
     {
