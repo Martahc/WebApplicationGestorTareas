@@ -146,6 +146,7 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\UsuariosController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -164,6 +165,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Model1.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\CastigoDto.cs" />
+    <Compile Include="Models\PremioDto.cs" />
+    <Compile Include="Models\TareaDto.cs" />
+    <Compile Include="Models\UsuarioDto.cs" />
     <Compile Include="Premio.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -249,7 +254,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
+    <Folder Include="Views\Usuarios\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
