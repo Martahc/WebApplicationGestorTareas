@@ -145,6 +145,7 @@
     <Compile Include="Castigo.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Controllers\CastigosController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PremiosController.cs" />
     <Compile Include="Controllers\UsuariosController.cs" />
