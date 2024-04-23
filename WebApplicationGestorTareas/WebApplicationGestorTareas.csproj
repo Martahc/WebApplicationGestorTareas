@@ -148,6 +148,7 @@
     <Compile Include="Controllers\CastigosController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PremiosController.cs" />
+    <Compile Include="Controllers\TareasController.cs" />
     <Compile Include="Controllers\UsuariosController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -257,6 +258,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Premios\" />
+    <Folder Include="Views\Tareas\" />
     <Folder Include="Views\Usuarios\" />
   </ItemGroup>
   <ItemGroup>
