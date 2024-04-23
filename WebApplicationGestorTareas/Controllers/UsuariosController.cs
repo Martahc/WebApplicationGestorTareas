@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Data.Entity;
+using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 
@@ -166,6 +167,59 @@ namespace WebApplicationGestorTareas.Controllers
             db.SaveChanges();
             return View(usuario);
         }
+
+        // GET: Usuarios/5/Tareas
+        public ActionResult ObtenerTareas(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Usuario usuario = db.Usuario.Find(id);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+            return View(usuario.Tarea);
+        }
+
+        // PUT: Usuarios/5/Tareas/5/TareaCompletada
+        [HttpPut]
+        [ValidateAntiForgeryToken]
+        public ActionResult MarcarTareaCompletada(int? idUsuario, int? idTarea, [Bind(Include = "Estado")] Tarea tareaModificada)
+        {
+            if (idUsuario == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            if (idTarea == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Usuario usuario = db.Usuario.Find(idUsuario);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+
+            Tarea tarea = db.Tarea.Find(idTarea);
+            if (tarea == null)
+            {
+                return HttpNotFound();
+            }
+            if (ModelState.IsValid)
+            {
+                tarea.Estado = tareaModificada.Estado;
+                db.Entry(tarea).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            ViewBag.Castigo_Id = new SelectList(db.Castigo, "Id", "Nombre", tarea.Castigo_Id);
+            ViewBag.Usuario_Id = new SelectList(db.Usuario, "Id", "Nombre", tarea.Usuario_Id);
+            return View(tarea);
+        }
+
 
         protected override void Dispose(bool disposing)
         {
