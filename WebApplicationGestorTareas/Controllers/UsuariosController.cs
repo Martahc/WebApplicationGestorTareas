@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -271,9 +272,12 @@ namespace WebApplicationGestorTareas.Controllers
             return View(usuario);
         }
 
+        #region tareas
+
         // GET: Usuarios/5/Tareas
-        public ActionResult ObtenerTareas(int? id)
+        public ActionResult ObtenerMisTareas()
         {
+            int id = int.Parse(Session["UserID"].ToString());
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -286,20 +290,30 @@ namespace WebApplicationGestorTareas.Controllers
             return View(usuario.Tarea);
         }
 
-        // PUT: Usuarios/5/Tareas/5/TareaCompletada
-        [HttpPut]
-        [ValidateAntiForgeryToken]
-        public ActionResult MarcarTareaCompletada(int? idUsuario, int? idTarea, [Bind(Include = "Estado")] Tarea tareaModificada)
+        public ActionResult CambiarEstado(int idTarea)
         {
-            if (idUsuario == null)
+            Tarea tarea = db.Tarea.Find(idTarea);
+            if (tarea == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            if (idTarea == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HttpNotFound();
             }
 
+            if (tarea.Estado == "Asignada")
+            {
+                tarea.Estado = "En progreso";
+                db.Entry(tarea).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
+            return RedirectToAction("ObtenerMisTareas");
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult MarcarTareaCompletada(int idUsuario, int idTarea, string estadoTarea)
+        {
             Usuario usuario = db.Usuario.Find(idUsuario);
             if (usuario == null)
             {
@@ -311,17 +325,53 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
-            if (ModelState.IsValid)
+
+            if (usuario.Puntos.HasValue && tarea.Puntos.HasValue)
             {
-                tarea.Estado = tareaModificada.Estado;
-                db.Entry(tarea).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                usuario.Puntos += tarea.Puntos;
             }
-            ViewBag.Castigo_Id = new SelectList(db.Castigo, "Id", "Nombre", tarea.Castigo_Id);
-            ViewBag.Usuario_Id = new SelectList(db.Usuario, "Id", "Nombre", tarea.Usuario_Id);
-            return View(tarea);
+            else if (!usuario.Puntos.HasValue && tarea.Puntos.HasValue)
+            {
+                usuario.Puntos = tarea.Puntos;
+            }
+
+            tarea.Estado = estadoTarea;
+            tarea.FechaFin = DateTime.Now;
+
+            int plazo = tarea.Plazo.Value;
+
+            DateTime fechaLimite = tarea.FechaInicio.Value.AddDays(tarea.Plazo.Value);
+
+            if (tarea.FechaFin > fechaLimite)
+            {
+                Castigo castigo = db.Castigo.Find(tarea.Castigo_Id);
+                usuario.Castigo.Add(castigo);
+                castigo.Usuario.Add(usuario);
+                db.Entry(castigo).State = EntityState.Modified;
+            }
+            else
+            {
+                var premio = db.Premio
+                .Where(p => p.Puntos <= usuario.Puntos)
+                .OrderByDescending(p => p.Puntos)
+                .FirstOrDefault();
+
+                if (premio != null)
+                {
+                    usuario.Premio.Add(premio);
+                    premio.Usuario.Add(usuario);
+                    db.Entry(premio).State = EntityState.Modified;
+                }
+            }
+
+            db.Entry(tarea).State = EntityState.Modified;
+            db.Entry(usuario).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return RedirectToAction("ObtenerMisTareas");
         }
+
+        #endregion
 
 
         protected override void Dispose(bool disposing)
