@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="GestorTareasModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="GestorTareasModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Castigo">
           <Key>
             <PropertyRef Name="Id" />
@@ -36,7 +36,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Nombre" Type="varchar" MaxLength="255" />
-          <Property Name="Plazo" Type="date" />
+          <Property Name="Plazo" Type="int" />
           <Property Name="Puntos" Type="int" />
           <Property Name="NivelDificultad" Type="varchar" MaxLength="255" />
           <Property Name="Estado" Type="varchar" MaxLength="255" />
@@ -74,7 +74,7 @@
           <Property Name="Usuario_Id" Type="int" Nullable="false" />
           <Property Name="Premio_Id" Type="int" Nullable="false" />
         </EntityType>
-        <Association Name="FK__Tarea__castigo_i__534D60F1">
+        <Association Name="FK__Tarea__Castigo_I__60A75C0F">
           <End Role="Castigo" Type="Self.Castigo" Multiplicity="1" />
           <End Role="Tarea" Type="Self.Tarea" Multiplicity="*" />
           <ReferentialConstraint>
@@ -86,7 +86,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Tarea__usuario_i__52593CB8">
+        <Association Name="FK__Tarea__Usuario_I__5FB337D6">
           <End Role="Usuario" Type="Self.Usuario" Multiplicity="0..1" />
           <End Role="Tarea" Type="Self.Tarea" Multiplicity="*" />
           <ReferentialConstraint>
@@ -166,11 +166,11 @@
           <EntitySet Name="Usuario" EntityType="Self.Usuario" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Usuario_Castigo" EntityType="Self.Usuario_Castigo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Usuario_Premio" EntityType="Self.Usuario_Premio" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__Tarea__castigo_i__534D60F1" Association="Self.FK__Tarea__castigo_i__534D60F1">
+          <AssociationSet Name="FK__Tarea__Castigo_I__60A75C0F" Association="Self.FK__Tarea__Castigo_I__60A75C0F">
             <End Role="Castigo" EntitySet="Castigo" />
             <End Role="Tarea" EntitySet="Tarea" />
           </AssociationSet>
-          <AssociationSet Name="FK__Tarea__usuario_i__52593CB8" Association="Self.FK__Tarea__usuario_i__52593CB8">
+          <AssociationSet Name="FK__Tarea__Usuario_I__5FB337D6" Association="Self.FK__Tarea__Usuario_I__5FB337D6">
             <End Role="Usuario" EntitySet="Usuario" />
             <End Role="Tarea" EntitySet="Tarea" />
           </AssociationSet>
@@ -195,8 +195,7 @@
             <End Role="Usuario_Premio" EntitySet="Usuario_Premio" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="GestorTareasModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -235,7 +234,7 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Nombre" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Plazo" Type="DateTime" Precision="0" />
+          <Property Name="Plazo" Type="Int32" />
           <Property Name="Puntos" Type="Int32" />
           <Property Name="NivelDificultad" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="Estado" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
