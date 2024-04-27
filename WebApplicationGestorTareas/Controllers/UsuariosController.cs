@@ -9,6 +9,109 @@ namespace WebApplicationGestorTareas.Controllers
     {
         private GestorTareasEntities db = new GestorTareasEntities();
 
+
+        #region login
+
+        public ActionResult Login()
+        {
+            ViewBag.Rol_Id = new SelectList(db.Rol, "Id", "Nombre");
+            return View();
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(Usuario objUser)
+        {
+            if (ModelState.IsValid)
+            {
+                using (GestorTareasEntities db = new GestorTareasEntities())
+                {
+                    var obj = db.Usuario.Where(a => a.Nombre.Equals(objUser.Nombre) && a.Contraseña.Equals(objUser.Contraseña)).FirstOrDefault();
+                    if (obj != null)
+                    {
+                        Session["UserID"] = obj.Id.ToString();
+                        Session["UserName"] = obj.Nombre.ToString();
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+            }
+            return View(objUser);
+        }
+
+        public ActionResult Registro()
+        {
+            ViewBag.Rol_Id = new SelectList(db.Rol, "Id", "Nombre");
+            return View();
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Registro([Bind(Include = "Id,Nombre,Email,Contraseña,Telefono,Imagen,Rol_Id")] Usuario usuario)
+        {
+            var existingUser = db.Usuario.FirstOrDefault(a => a.Id == usuario.Id);
+            if (existingUser == null)
+            {
+                if (ModelState.IsValid)
+                {
+                    usuario.Rol = db.Rol.Find(usuario.Rol_Id);
+                    db.Usuario.Add(usuario);
+                    db.SaveChanges();
+                    Session["UserID"] = usuario.Id.ToString();
+                    Session["UserName"] = usuario.Nombre.ToString();
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "El usuario ya existe.");
+            }
+            ViewBag.Rol_Id = new SelectList(db.Rol, "Id", "Nombre", usuario.Rol_Id);
+            return View(usuario);
+        }
+
+        public ActionResult Logout()
+        {
+            Session["UserID"] = null;
+            Session["UserName"] = null;
+            Session.Abandon();
+            return RedirectToAction("Index", "Home");
+        }
+
+        public ActionResult RecuperarContraseña()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult RecuperarContraseña(string UsuarioCorreo, string NuevaContraseña, string ConfirmarNuevaContraseña)
+        {
+            if (ModelState.IsValid)
+            {
+                var usuario = db.Usuario.FirstOrDefault(u => u.Nombre.Equals(UsuarioCorreo) || u.Email.Equals(UsuarioCorreo));
+
+                if (usuario != null && NuevaContraseña == ConfirmarNuevaContraseña)
+                {
+                    usuario.Contraseña = NuevaContraseña;
+                    db.Entry(usuario).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    return RedirectToAction("Login");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "No se pudo recuperar la contraseña. Verifica tus datos.");
+                    return View();
+                }
+            }
+            return View();
+        }
+
+        #endregion
+
+
         // GET: ver perfiles
         public ActionResult Index()
         {
