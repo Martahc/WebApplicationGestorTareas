@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -33,6 +34,7 @@ namespace WebApplicationGestorTareas.Controllers
                     {
                         Session["UserID"] = obj.Id.ToString();
                         Session["UserName"] = obj.Nombre.ToString();
+                        Session["UserRol"] = obj.Rol.Nombre;
                         return RedirectToAction("Index", "Home");
                     }
                 }
@@ -113,14 +115,16 @@ namespace WebApplicationGestorTareas.Controllers
         #endregion
 
 
+        #region usuario
+
         // GET: ver perfiles
-        public ActionResult Index()
+        public ActionResult ObtenerUsuarios()
         {
             return View(db.Usuario.ToList());
         }
 
-        // GET: ver detalles de un perfil / ver mi perfil --> ver puntos
-        public ActionResult Details(int? id)
+        // GET: ver detalles de un perfil --> ver puntos
+        public ActionResult Detalles(int? id)
         {
             if (id == null)
             {
@@ -133,6 +137,44 @@ namespace WebApplicationGestorTareas.Controllers
             }
             return View(usuario);
         }
+
+        // GET: ver mi perfil --> ver mis puntos
+        public ActionResult VerMiPerfil()
+        {
+            int id = int.Parse(Session["UserID"].ToString());
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Usuario usuario = db.Usuario.Find(id);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+            return View(usuario);
+        }
+
+        #region imagen
+        public ActionResult GetImage(string imageName)
+        {
+            string imagePath = Server.MapPath("~/Content/" + imageName);
+            if (System.IO.File.Exists(imagePath))
+            {
+                using (FileStream fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                {
+                    using (BinaryReader br = new BinaryReader(fs))
+                    {
+                        byte[] imageBytes = br.ReadBytes((int)fs.Length);
+                        return File(imageBytes, "image/jpeg");
+                    }
+                }
+            }
+            return null;
+        }
+
+        #endregion
+
+        #endregion
 
         // GET: ver mis premios / ver premios de un usuario
         public ActionResult ObtenerPremios(int? id)
