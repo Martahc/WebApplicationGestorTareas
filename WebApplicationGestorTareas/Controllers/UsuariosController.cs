@@ -114,7 +114,6 @@ namespace WebApplicationGestorTareas.Controllers
 
         #endregion
 
-
         #region usuario
 
         // GET: ver perfiles
@@ -176,9 +175,12 @@ namespace WebApplicationGestorTareas.Controllers
 
         #endregion
 
-        // GET: ver mis premios / ver premios de un usuario
-        public ActionResult ObtenerPremios(int? id)
+        #region premios 
+
+        // GET: ver mis premios 
+        public ActionResult ObtenerMisPremios()
         {
+            int id = int.Parse(Session["UserID"].ToString());
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -191,28 +193,31 @@ namespace WebApplicationGestorTareas.Controllers
             return View(usuario.Premio);
         }
 
-        // GET: ver mi premio / ver premio de un usuario
-        public ActionResult ObtenerPremio(int? idUsuario, int? idPremio)
+        // GET: ver premios de un usuario
+        public ActionResult ObtenerPremios(int? id)
         {
-            if (idUsuario == null)
+            if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-            if (idPremio == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Usuario usuario = db.Usuario.Find(idUsuario);
+            Usuario usuario = db.Usuario.Find(id);
             if (usuario == null)
             {
                 return HttpNotFound();
             }
-            Premio premio = usuario.Premio.First(prem => prem.Id == idPremio);
+            ViewBag.idUsuario = id;
+            return View(usuario.Premio);
+        }
+
+        // GET: ver premio de un usuario
+        public ActionResult ObtenerPremio(int? idUsuario, int? idPremio)
+        {
+            Premio premio = db.Premio.Find(idPremio);
             if (premio == null)
             {
                 return HttpNotFound();
             }
+            ViewBag.idUsuario = idUsuario;
             return View(premio);
         }
 
@@ -234,16 +239,29 @@ namespace WebApplicationGestorTareas.Controllers
                 return HttpNotFound();
             }
 
-            Premio premio = usuario.Premio.First(prem => prem.Id == idPremio);
+            Premio premio = db.Premio.Find(idPremio);
             if (premio == null)
             {
                 return HttpNotFound();
             }
+
+            return View(premio);
+        }
+
+        [HttpPost, ActionName("EliminarPremio")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeletePremioConfirmed(int? idUsuario, int? idPremio)
+        {
+            Usuario usuario = db.Usuario.Find(idUsuario);
+            Premio premio = usuario.Premio.First(prem => prem.Id == idPremio);
             premio.Usuario.Remove(usuario);
             usuario.Premio.Remove(premio);
             db.SaveChanges();
-            return View(usuario);
+            return RedirectToAction("ObtenerPremios", new { id = idUsuario });
+
         }
+
+        #endregion
 
         // GET: ver mis castigos / ver castigos de un usuario
         public ActionResult ObtenerCastigos(int? id)
@@ -414,7 +432,6 @@ namespace WebApplicationGestorTareas.Controllers
         }
 
         #endregion
-
 
         protected override void Dispose(bool disposing)
         {
