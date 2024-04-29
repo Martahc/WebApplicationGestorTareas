@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Mi aplicación ASP.NET</title>
@@ -9,7 +9,10 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
+    <script defer src='https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js'></script>
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css'>
+
+    <nav class="navbar navbar-expand-lg bg-light">
         <div class="container">
             @Html.ActionLink("Nombre de la aplicación", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Alternar navegación" aria-controls="navbarSupportedContent"
@@ -19,12 +22,45 @@
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li>@Html.ActionLink("Inicio", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Acerca de", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Contacto", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+
+                    @if (Session["UserID"] != null)
+                    {
+                        <li>@Html.ActionLink("Mi perfil", "VerMiPerfil", "Usuarios", new { area = "" }, new { @class = "nav-link" })</li>
+
+                        <li>@Html.ActionLink("Mis tareas", "ObtenerMisTareas", "Usuarios", new { area = "" }, new { @class = "nav-link" })</li>
+
+
+                        if (Session["UserRol"].ToString() == "Admin")
+                        {
+                            <li>@Html.ActionLink("Tareas", "ObtenerTareas", "Tareas", new { area = "" }, new { @class = "nav-link" })</li>
+                            <li>@Html.ActionLink("Perfiles", "ObtenerUsuarios", "Usuarios", new { area = "" }, new { @class = "nav-link" })</li>
+                            <li class='nav-item dropdown'>
+                                <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownAbout' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Crear</a>
+                                <div class='dropdown-menu' aria-labelledby='navbarDropdownAbout'>
+                                    <a class="nav-link" href="@Url.Action("CrearPremio", "Premios")">Crear Premio</a>
+                                    <a class="nav-link" href="@Url.Action("CrearCastigo", "Castigos")">Crear Castigo</a>
+                                    <a class="nav-link" href="@Url.Action("CrearTarea", "Tareas")">Crear Tarea</a>
+
+                                </div>
+                            </li>
+                        }
+                        <li>@Html.ActionLink("Logout", "Logout", "Usuarios", new { area = "" }, new { @class = "nav-link" })</li>
+
+                    }
+                    else
+                    {
+                        <li>@Html.ActionLink("Login", "Login", "Usuarios", new { area = "" }, new { @class = "nav-link" })</li>
+                        <li>@Html.ActionLink("Registrarse", "Registro", "Usuarios", new { area = "" }, new { @class = "nav-link" })</li>
+
+
+                    }
                 </ul>
             </div>
         </div>
     </nav>
+
+
+
     <div class="container body-content">
         @RenderBody()
         <hr />
@@ -38,3 +74,4 @@
     @RenderSection("scripts", required: false)
 </body>
 </html>
+

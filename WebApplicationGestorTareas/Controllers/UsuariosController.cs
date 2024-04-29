@@ -263,9 +263,12 @@ namespace WebApplicationGestorTareas.Controllers
 
         #endregion
 
-        // GET: ver mis castigos / ver castigos de un usuario
-        public ActionResult ObtenerCastigos(int? id)
+        #region castigos
+
+        // GET: ver mis castigos
+        public ActionResult ObtenerMisCastigos()
         {
+            int id = int.Parse(Session["UserID"].ToString());
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -278,28 +281,36 @@ namespace WebApplicationGestorTareas.Controllers
             return View(usuario.Castigo);
         }
 
-        // GET: ver mi castigo / ver castigo de un usuario
-        public ActionResult ObtenerCastigo(int? idUsuario, int? idCastigo)
+        // GET: ver castigos de un usuario
+        public ActionResult ObtenerCastigos(int? id)
         {
-            if (idUsuario == null)
+            if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-            if (idCastigo == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Usuario usuario = db.Usuario.Find(idUsuario);
+            Usuario usuario = db.Usuario.Find(id);
             if (usuario == null)
             {
                 return HttpNotFound();
             }
-            Castigo castigo = usuario.Castigo.First(cast => cast.Id == idCastigo);
+            ViewBag.idUsuario = id;
+            return View(usuario.Castigo);
+        }
+
+        // GET: ver castigo de un usuario
+        public ActionResult ObtenerCastigo(int? idUsuario, int? idCastigo)
+        {
+            if (idCastigo == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Castigo castigo = db.Castigo.First(cast => cast.Id == idCastigo);
             if (castigo == null)
             {
                 return HttpNotFound();
             }
+            ViewBag.idUsuario = idUsuario;
             return View(castigo);
         }
 
@@ -326,11 +337,23 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
+
+            return View(castigo);
+        }
+
+        [HttpPost, ActionName("EliminarCastigo")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteCastigoConfirmed(int? idUsuario, int? idCastigo)
+        {
+            Usuario usuario = db.Usuario.Find(idUsuario);
+            Castigo castigo = usuario.Castigo.First(cast => cast.Id == idCastigo);
             castigo.Usuario.Remove(usuario);
             usuario.Castigo.Remove(castigo);
             db.SaveChanges();
-            return View(usuario);
+            return RedirectToAction("ObtenerCastigos", new { id = idUsuario });
         }
+
+        #endregion
 
         #region tareas
 

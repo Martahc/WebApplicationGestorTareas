@@ -12,7 +12,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Nombre" Type="varchar" MaxLength="255" />
           <Property Name="Descripcion" Type="varchar" MaxLength="255" />
-          <Property Name="Plazo" Type="int" />
+          <Property Name="Duracion" Type="int" />
         </EntityType>
         <EntityType Name="Premio">
           <Key>
@@ -206,7 +206,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Nombre" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="Descripcion" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Plazo" Type="Int32" />
+          <Property Name="Duracion" Type="Int32" />
           <NavigationProperty Name="Tarea" Relationship="Self.FK__Tarea__castigo_i__534D60F1" FromRole="Castigo" ToRole="Tarea" />
           <NavigationProperty Name="Usuario" Relationship="Self.Usuario_Castigo" FromRole="Castigo" ToRole="Usuario" />
         </EntityType>
@@ -342,10 +342,10 @@
           <EntitySetMapping Name="Castigo">
             <EntityTypeMapping TypeName="GestorTareasModel.Castigo">
               <MappingFragment StoreEntitySet="Castigo">
+                <ScalarProperty Name="Duracion" ColumnName="Duracion" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Nombre" ColumnName="Nombre" />
                 <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
-                <ScalarProperty Name="Plazo" ColumnName="Plazo" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
