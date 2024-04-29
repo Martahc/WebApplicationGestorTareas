@@ -1,17 +1,16 @@
-﻿@model IEnumerable<WebApplicationGestorTareas.Premio>
+﻿@model IEnumerable<WebApplicationGestorTareas.Castigo>
 
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Premios</h2>
+<h2>Castigos</h2>
 
 <table class="table">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.Nombre)
         </th>
-  
         <th></th>
     </tr>
 
@@ -21,9 +20,8 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Nombre)
             </td>
-           
             <td>
-                @Html.ActionLink("Detalles", "ObtenerPremio", new { idUsuario = ViewBag.idUsuario, idPremio = item.Id })
+                @Html.ActionLink("Detalles", "ObtenerCastigo", new { idUsuario = ViewBag.idUsuario, idCastigo = item.Id }) 
             </td>
         </tr>
     }
