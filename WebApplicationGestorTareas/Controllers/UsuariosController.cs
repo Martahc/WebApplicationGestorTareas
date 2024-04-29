@@ -28,17 +28,26 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 using (GestorTareasEntities db = new GestorTareasEntities())
                 {
-                    var obj = db.Usuario.Where(a => a.Nombre.Equals(objUser.Nombre) && a.Contraseña.Equals(objUser.Contraseña)).FirstOrDefault();
+                    var obj = db.Usuario
+                                .Include(u => u.Rol) // Asegúrate de incluir la propiedad de rol
+                                .FirstOrDefault(a => a.Nombre == objUser.Nombre && a.Contraseña == objUser.Contraseña);
+
                     if (obj != null)
                     {
                         Session["UserID"] = obj.Id.ToString();
                         Session["UserName"] = obj.Nombre.ToString();
                         return RedirectToAction("Index", "Home");
                     }
+                    else
+                    {
+                        ModelState.AddModelError("", "Usuario y/o contraseña incorrectos"); // Agrega el mensaje de error al ModelState
+                    }
                 }
             }
-            return View(objUser);
+
+            return View(objUser); 
         }
+
 
         public ActionResult Registro()
         {
@@ -51,7 +60,7 @@ namespace WebApplicationGestorTareas.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Registro([Bind(Include = "Id,Nombre,Email,Contraseña,Telefono,Imagen,Rol_Id")] Usuario usuario)
         {
-            var existingUser = db.Usuario.FirstOrDefault(a => a.Id == usuario.Id);
+            var existingUser = db.Usuario.FirstOrDefault(a => a.Nombre == usuario.Nombre);
             if (existingUser == null)
             {
                 if (ModelState.IsValid)
@@ -61,6 +70,7 @@ namespace WebApplicationGestorTareas.Controllers
                     db.SaveChanges();
                     Session["UserID"] = usuario.Id.ToString();
                     Session["UserName"] = usuario.Nombre.ToString();
+                    Session["UserRol"] = usuario.Rol.Nombre;
                     return RedirectToAction("Index", "Home");
                 }
             }
