@@ -10,6 +10,9 @@
 {
     @Html.AntiForgeryToken()
 
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
     <div class="form-group" style="margin-top: 20px;">
         <div class="col-md-10">
             @Html.TextBox("UsuarioCorreo", null, new { @class = "form-control", placeholder = "Usuario o Correo Electrónico" })
@@ -23,7 +26,7 @@
         </div>
     </div>
 
-    <div class="form-group" style="margin-top: 20px;" >
+    <div class="form-group" style="margin-top: 20px;">
         <div class="col-md-10">
             @Html.Password("ConfirmarNuevaContraseña", null, new { @class = "form-control", placeholder = "Confirmar Nueva Contraseña" })
         </div>
