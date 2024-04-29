@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -36,6 +37,7 @@ namespace WebApplicationGestorTareas.Controllers
                     {
                         Session["UserID"] = obj.Id.ToString();
                         Session["UserName"] = obj.Nombre.ToString();
+                        Session["UserRol"] = obj.Rol.Nombre;
                         return RedirectToAction("Index", "Home");
                     }
                     else
@@ -122,15 +124,16 @@ namespace WebApplicationGestorTareas.Controllers
 
         #endregion
 
+        #region usuario
 
         // GET: ver perfiles
-        public ActionResult Index()
+        public ActionResult ObtenerUsuarios()
         {
             return View(db.Usuario.ToList());
         }
 
-        // GET: ver detalles de un perfil / ver mi perfil --> ver puntos
-        public ActionResult Details(int? id)
+        // GET: ver detalles de un perfil --> ver puntos
+        public ActionResult Detalles(int? id)
         {
             if (id == null)
             {
@@ -144,9 +147,50 @@ namespace WebApplicationGestorTareas.Controllers
             return View(usuario);
         }
 
-        // GET: ver mis premios / ver premios de un usuario
-        public ActionResult ObtenerPremios(int? id)
+        // GET: ver mi perfil --> ver mis puntos
+        public ActionResult VerMiPerfil()
         {
+            int id = int.Parse(Session["UserID"].ToString());
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Usuario usuario = db.Usuario.Find(id);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+            return View(usuario);
+        }
+
+        #region imagen
+        public ActionResult GetImage(string imageName)
+        {
+            string imagePath = Server.MapPath("~/Content/" + imageName);
+            if (System.IO.File.Exists(imagePath))
+            {
+                using (FileStream fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                {
+                    using (BinaryReader br = new BinaryReader(fs))
+                    {
+                        byte[] imageBytes = br.ReadBytes((int)fs.Length);
+                        return File(imageBytes, "image/jpeg");
+                    }
+                }
+            }
+            return null;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region premios 
+
+        // GET: ver mis premios 
+        public ActionResult ObtenerMisPremios()
+        {
+            int id = int.Parse(Session["UserID"].ToString());
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -159,28 +203,31 @@ namespace WebApplicationGestorTareas.Controllers
             return View(usuario.Premio);
         }
 
-        // GET: ver mi premio / ver premio de un usuario
-        public ActionResult ObtenerPremio(int? idUsuario, int? idPremio)
+        // GET: ver premios de un usuario
+        public ActionResult ObtenerPremios(int? id)
         {
-            if (idUsuario == null)
+            if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-            if (idPremio == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Usuario usuario = db.Usuario.Find(idUsuario);
+            Usuario usuario = db.Usuario.Find(id);
             if (usuario == null)
             {
                 return HttpNotFound();
             }
-            Premio premio = usuario.Premio.First(prem => prem.Id == idPremio);
+            ViewBag.idUsuario = id;
+            return View(usuario.Premio);
+        }
+
+        // GET: ver premio de un usuario
+        public ActionResult ObtenerPremio(int? idUsuario, int? idPremio)
+        {
+            Premio premio = db.Premio.Find(idPremio);
             if (premio == null)
             {
                 return HttpNotFound();
             }
+            ViewBag.idUsuario = idUsuario;
             return View(premio);
         }
 
@@ -202,16 +249,29 @@ namespace WebApplicationGestorTareas.Controllers
                 return HttpNotFound();
             }
 
-            Premio premio = usuario.Premio.First(prem => prem.Id == idPremio);
+            Premio premio = db.Premio.Find(idPremio);
             if (premio == null)
             {
                 return HttpNotFound();
             }
+
+            return View(premio);
+        }
+
+        [HttpPost, ActionName("EliminarPremio")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeletePremioConfirmed(int? idUsuario, int? idPremio)
+        {
+            Usuario usuario = db.Usuario.Find(idUsuario);
+            Premio premio = usuario.Premio.First(prem => prem.Id == idPremio);
             premio.Usuario.Remove(usuario);
             usuario.Premio.Remove(premio);
             db.SaveChanges();
-            return View(usuario);
+            return RedirectToAction("ObtenerPremios", new { id = idUsuario });
+
         }
+
+        #endregion
 
         // GET: ver mis castigos / ver castigos de un usuario
         public ActionResult ObtenerCastigos(int? id)
@@ -382,7 +442,6 @@ namespace WebApplicationGestorTareas.Controllers
         }
 
         #endregion
-
 
         protected override void Dispose(bool disposing)
         {

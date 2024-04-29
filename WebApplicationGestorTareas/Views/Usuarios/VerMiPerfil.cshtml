@@ -1,0 +1,67 @@
+﻿@model WebApplicationGestorTareas.Usuario
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Mi perfil</h2>
+
+<div>
+    <h4>Usuario</h4>
+    <hr />
+    <dl class="dl-horizontal">
+
+        <div class="details-item">
+            <dt class="details-label">
+                @Html.DisplayNameFor(model => model.Imagen)
+            </dt>
+            <dd>
+                <img src="@Url.Action("GetImage", "Usuarios", new { imageName =  @Html.DisplayFor(model => model.Imagen) })" alt="Imagen del producto" />
+            </dd>
+        </div>
+
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Rol)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Rol.Nombre)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Telefono)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Telefono)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Puntos)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Puntos)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Ver mis castigos", "ObtenerMisCastigos") |
+    @Html.ActionLink("Ver mis premios", "ObtenerMisPremios") |
+    @Html.ActionLink("Back to List", "ObtenerUsuarios")
+</p>

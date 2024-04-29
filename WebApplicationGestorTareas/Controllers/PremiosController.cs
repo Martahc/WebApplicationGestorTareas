@@ -14,31 +14,21 @@ namespace WebApplicationGestorTareas.Models
             return View(db.Premio.ToList());
         }
 
+        public ActionResult CrearPremio()
+        {           
+            return View();
+        }
+
         // POST: Premios/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Nombre,Descripcion,Puntos")] Premio premio)
+        public ActionResult CrearPremio([Bind(Include = "Id,Nombre,Descripcion,Puntos")] Premio premio)
         {
             if (ModelState.IsValid)
             {
                 db.Premio.Add(premio);
                 db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(premio);
-        }
-
-        // GET: Premios/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Premio premio = db.Premio.Find(id);
-            if (premio == null)
-            {
-                return HttpNotFound();
+                return RedirectToAction("Index","Home");
             }
             return View(premio);
         }
