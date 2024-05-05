@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using System.Net;
 using System.Web.Mvc;
+using WebApplicationGestorTareas.Models;
 
-namespace WebApplicationGestorTareas.Models
+namespace WebApplicationGestorTareas
 {
     public class PremiosController : Controller
     {
@@ -22,8 +22,9 @@ namespace WebApplicationGestorTareas.Models
         // POST: Premios/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CrearPremio([Bind(Include = "Id,Nombre,Descripcion,Puntos")] Premio premio)
+        public ActionResult CrearPremio([Bind(Include = "Id,Nombre,Descripcion,Puntos")] PremioDto premioDto)
         {
+            Premio premio = premioDto.CopyFromDto();
             if (ModelState.IsValid)
             {
                 db.Premio.Add(premio);

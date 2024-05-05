@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using WebApplicationGestorTareas.Models;
 
 namespace WebApplicationGestorTareas.Controllers
 {
@@ -61,8 +62,9 @@ namespace WebApplicationGestorTareas.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CrearTarea([Bind(Include = "Id,Nombre,Plazo,Puntos,NivelDificultad,Castigo_Id")] Tarea tarea)
+        public ActionResult CrearTarea([Bind(Include = "Id,Nombre,Plazo,Puntos,NivelDificultad,Castigo_Id")] TareaDto tareaDto)
         {
+            Tarea tarea = tareaDto.CopyFromDto();
             if (ModelState.IsValid)
             {
                 Castigo castigo = db.Castigo.Find(tarea.Castigo_Id);
@@ -78,7 +80,7 @@ namespace WebApplicationGestorTareas.Controllers
 
             ViewBag.Castigo_Id = new SelectList(db.Castigo, "Id", "Nombre", tarea.Castigo_Id);
             ViewBag.Usuario_Id = new SelectList(db.Usuario, "Id", "Nombre", tarea.Usuario_Id);
-            return View(tarea);
+            return View(tareaDto);
         }
 
         // GET: Pedidoes/Edit/5
@@ -89,18 +91,26 @@ namespace WebApplicationGestorTareas.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Tarea tarea = db.Tarea.Find(id);
-            if (tarea == null)
+            TareaDto tareaDto = new TareaDto()
             {
-                return HttpNotFound();
-            }
+                Id = tarea.Id,
+                Nombre = tarea.Nombre,
+                Plazo = tarea.Plazo,
+                Puntos = tarea.Puntos,
+                NivelDificultad = tarea.NivelDificultad,
+                Estado = tarea.Estado,
+                FechaInicio = tarea.FechaInicio,
+                FechaFin = tarea.FechaFin,
+            };
+
             ViewBag.Usuario_Id = new SelectList(db.Usuario, "Id", "Nombre");
-            ViewBag.Castigo_Id = new SelectList(db.Castigo, "Id", "Nombre", tarea.Castigo_Id);
-            return View(tarea);
+            ViewBag.Castigo_Id = new SelectList(db.Castigo, "Id", "Nombre");
+            return View(tareaDto);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ModificarTarea([Bind(Include = "Id,Nombre,Plazo,Puntos,NivelDificultad,Estado,FechaInicio,FechaFin")] Tarea tareaModificada)
+        public ActionResult ModificarTarea([Bind(Include = "Id,Nombre,Plazo,Puntos,NivelDificultad,FechaInicio")] TareaDto tareaModificada)
         {
             if (ModelState.IsValid)
             {
