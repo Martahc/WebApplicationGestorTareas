@@ -65,10 +65,15 @@ namespace WebApplicationGestorTareas.Controllers
         {
             if (ModelState.IsValid)
             {
+                Castigo castigo = db.Castigo.Find(tarea.Castigo_Id);
+                castigo.Tarea.Add(tarea);
+                db.Entry(castigo).State = EntityState.Modified;
+
                 tarea.Estado = "No asignada";
                 db.Tarea.Add(tarea);
+
                 db.SaveChanges();
-                return RedirectToAction("ObtenerTareas");
+                return RedirectToAction("ObtenerTareas");               
             }
 
             ViewBag.Castigo_Id = new SelectList(db.Castigo, "Id", "Nombre", tarea.Castigo_Id);
@@ -148,9 +153,7 @@ namespace WebApplicationGestorTareas.Controllers
             Castigo castigo = db.Castigo.Find(tarea.Castigo_Id);
             Usuario usuario = db.Usuario.Find(tarea.Usuario_Id);
             castigo.Tarea.Remove(tarea);
-            castigo.Usuario.Remove(usuario);
             usuario.Tarea.Remove(tarea);
-            usuario.Castigo.Remove(castigo);
             db.Tarea.Remove(tarea);
             db.SaveChanges();
             return RedirectToAction("ObtenerTareas");
@@ -165,7 +168,7 @@ namespace WebApplicationGestorTareas.Controllers
         // POST: Tareas/1/Asignar
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AsignarTarea([Bind(Include = "Id,FechaInicio,FechaFin,Usuario_Id")] Tarea tareaAsignar)
+        public ActionResult AsignarTarea([Bind(Include = "Id,Usuario_Id,FechaInicio")] Tarea tareaAsignar)
         {
             if (tareaAsignar.Id == null)
             {
@@ -180,17 +183,13 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 tarea.Estado = "Asignada";
                 tarea.Usuario_Id = tareaAsignar.Usuario_Id;
-                tarea.FechaFin = tareaAsignar.FechaFin;
                 tarea.FechaInicio = tareaAsignar.FechaInicio;
 
-                Castigo castigo = db.Castigo.Find(tarea.Castigo_Id);
                 Usuario usuario = db.Usuario.Find(tarea.Usuario_Id);
 
-                castigo.Usuario.Add(usuario);   
-                usuario.Castigo.Add(castigo);
+                usuario.Tarea.Add(tarea);
 
                 db.Entry(tarea).State = EntityState.Modified;
-                db.Entry(castigo).State = EntityState.Modified;
                 db.Entry(usuario).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("ObtenerTareasAsignadas");

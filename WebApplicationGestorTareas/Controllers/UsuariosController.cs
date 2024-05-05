@@ -402,7 +402,6 @@ namespace WebApplicationGestorTareas.Controllers
         }
 
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult MarcarTareaCompletada(int idUsuario, int idTarea, string estadoTarea)
@@ -419,20 +418,9 @@ namespace WebApplicationGestorTareas.Controllers
                 return HttpNotFound();
             }
 
-            if (usuario.Puntos.HasValue && tarea.Puntos.HasValue)
-            {
-                usuario.Puntos += tarea.Puntos;
-            }
-            else if (!usuario.Puntos.HasValue && tarea.Puntos.HasValue)
-            {
-                usuario.Puntos = tarea.Puntos;
-            }
-
             tarea.Estado = estadoTarea;
             tarea.FechaFin = DateTime.Now;
-
-            int plazo = tarea.Plazo.Value;
-
+           
             DateTime fechaLimite = tarea.FechaInicio.Value.AddDays(tarea.Plazo.Value);
 
             if (tarea.FechaFin > fechaLimite)
@@ -444,6 +432,15 @@ namespace WebApplicationGestorTareas.Controllers
             }
             else
             {
+                if (usuario.Puntos.HasValue && tarea.Puntos.HasValue)
+                {
+                    usuario.Puntos += tarea.Puntos;
+                }
+                else if (!usuario.Puntos.HasValue && tarea.Puntos.HasValue)
+                {
+                    usuario.Puntos = tarea.Puntos;
+                }
+
                 var premio = db.Premio
                 .Where(p => p.Puntos <= usuario.Puntos)
                 .OrderByDescending(p => p.Puntos)
@@ -452,8 +449,10 @@ namespace WebApplicationGestorTareas.Controllers
                 if (premio != null)
                 {
                     usuario.Premio.Add(premio);
-                    premio.Usuario.Add(usuario);
+                    premio.Usuario.Add(usuario);                   
                     db.Entry(premio).State = EntityState.Modified;
+
+                    usuario.Puntos -= premio.Puntos;
                 }
             }
 
