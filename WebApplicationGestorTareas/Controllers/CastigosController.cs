@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using System.Net;
 using System.Web.Mvc;
+using WebApplicationGestorTareas.Models;
 
 namespace WebApplicationGestorTareas.Controllers
 {
@@ -22,10 +22,11 @@ namespace WebApplicationGestorTareas.Controllers
         // POST: Castigos/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CrearCastigo([Bind(Include = "Id,Nombre,Descripcion,Plazo")] Castigo castigo)
+        public ActionResult CrearCastigo([Bind(Include = "Id,Nombre,Descripcion,Plazo")] CastigoDto CastigoDto)
         {
+            Castigo castigo = CastigoDto.CopyFromDto();
             if (ModelState.IsValid)
-            {
+            {                             
                 db.Castigo.Add(castigo);
                 db.SaveChanges();
                 return RedirectToAction("Index", "Home");
@@ -42,5 +43,6 @@ namespace WebApplicationGestorTareas.Controllers
             }
             base.Dispose(disposing);
         }
+
     }
 }

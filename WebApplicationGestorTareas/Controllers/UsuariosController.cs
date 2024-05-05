@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using WebApplicationGestorTareas.Models;
 
 namespace WebApplicationGestorTareas.Controllers
 {
@@ -30,8 +31,9 @@ namespace WebApplicationGestorTareas.Controllers
                 using (GestorTareasEntities db = new GestorTareasEntities())
                 {
                     var obj = db.Usuario
-                                .Include(u => u.Rol) // Asegúrate de incluir la propiedad de rol
+                                .Include(u => u.Rol) 
                                 .FirstOrDefault(a => a.Nombre == objUser.Nombre && a.Contraseña == objUser.Contraseña);
+
 
                     if (obj != null)
                     {
@@ -42,7 +44,7 @@ namespace WebApplicationGestorTareas.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError("", "Usuario y/o contraseña incorrectos"); // Agrega el mensaje de error al ModelState
+                        ModelState.AddModelError("", "Usuario y/o contraseña incorrectos"); 
                     }
                 }
             }
@@ -60,11 +62,12 @@ namespace WebApplicationGestorTareas.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Registro([Bind(Include = "Id,Nombre,Email,Contraseña,Telefono,Imagen,Rol_Id")] Usuario usuario)
+        public ActionResult Registro([Bind(Include = "Id,Nombre,Email,Contraseña,Telefono,Imagen,Rol_Id")] UsuarioDto usuarioDto)
         {
-            var existingUser = db.Usuario.FirstOrDefault(a => a.Nombre == usuario.Nombre);
+            var existingUser = db.Usuario.FirstOrDefault(a => a.Nombre == usuarioDto.Nombre);
             if (existingUser == null)
             {
+                Usuario usuario = usuarioDto.CopyFromDto();
                 if (ModelState.IsValid)
                 {
                     usuario.Rol = db.Rol.Find(usuario.Rol_Id);
@@ -80,14 +83,15 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 ModelState.AddModelError("", "El usuario ya existe.");
             }
-            ViewBag.Rol_Id = new SelectList(db.Rol, "Id", "Nombre", usuario.Rol_Id);
-            return View(usuario);
+            ViewBag.Rol_Id = new SelectList(db.Rol, "Id", "Nombre", usuarioDto.Rol_Id);
+            return View(usuarioDto);
         }
 
         public ActionResult Logout()
         {
             Session["UserID"] = null;
             Session["UserName"] = null;
+            Session["UserRol"] = null;
             Session.Abandon();
             return RedirectToAction("Index", "Home");
         }
@@ -99,28 +103,32 @@ namespace WebApplicationGestorTareas.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult RecuperarContraseña(string UsuarioCorreo, string NuevaContraseña, string ConfirmarNuevaContraseña)
+        public ActionResult RecuperarContraseña(string UsuarioCorreo, UsuarioContraseñaDto usuarioDto)
         {
             if (ModelState.IsValid)
             {
+                string NuevaContraseña = usuarioDto.NuevaContraseña;
+                string ConfirmarNuevaContraseña = usuarioDto.ConfirmarNuevaContraseña;
+
                 var usuario = db.Usuario.FirstOrDefault(u => u.Nombre.Equals(UsuarioCorreo) || u.Email.Equals(UsuarioCorreo));
 
-                if (usuario != null && NuevaContraseña == ConfirmarNuevaContraseña)
-                {
+                if (usuario != null)
+                {                 
                     usuario.Contraseña = NuevaContraseña;
                     db.Entry(usuario).State = EntityState.Modified;
                     db.SaveChanges();
 
-                    return RedirectToAction("Login");
+                    return RedirectToAction("Login");                  
                 }
                 else
                 {
-                    ModelState.AddModelError("", "No se pudo recuperar la contraseña. Verifica tus datos.");
+                    ModelState.AddModelError("", "No se encontró el usuario.");
                     return View();
                 }
             }
             return View();
         }
+
 
         #endregion
 
