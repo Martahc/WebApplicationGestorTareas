@@ -32,13 +32,13 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.Plazo, htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.LabelFor(model => model.Duracion, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
             <div class="input-group">
-                @Html.EditorFor(model => model.Plazo, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.Duracion, new { htmlAttributes = new { @class = "form-control" } })
                 <span class="input-group-addon" style="margin-left: 15px; margin-top: 10px;">días</span>
             </div>
-            @Html.ValidationMessageFor(model => model.Plazo, "", new { @class = "text-danger" })
+            @Html.ValidationMessageFor(model => model.Duracion, "", new { @class = "text-danger" })
         </div>
     </div>
 
