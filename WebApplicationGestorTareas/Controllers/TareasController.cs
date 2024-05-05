@@ -67,11 +67,15 @@ namespace WebApplicationGestorTareas.Controllers
             Tarea tarea = tareaDto.CopyFromDto();
             if (ModelState.IsValid)
             {
+                Castigo castigo = db.Castigo.Find(tarea.Castigo_Id);
+                castigo.Tarea.Add(tarea);
+                db.Entry(castigo).State = EntityState.Modified;
+
                 tarea.Estado = "No asignada";
                 db.Tarea.Add(tarea);
 
                 db.SaveChanges();
-                return RedirectToAction("ObtenerTareas");
+                return RedirectToAction("ObtenerTareas");               
             }
 
             ViewBag.Castigo_Id = new SelectList(db.Castigo, "Id", "Nombre", tarea.Castigo_Id);
@@ -189,17 +193,13 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 tarea.Estado = "Asignada";
                 tarea.Usuario_Id = tareaAsignar.Usuario_Id;
-                tarea.FechaFin = tareaAsignar.FechaFin;
                 tarea.FechaInicio = tareaAsignar.FechaInicio;
 
-                Castigo castigo = db.Castigo.Find(tarea.Castigo_Id);
                 Usuario usuario = db.Usuario.Find(tarea.Usuario_Id);
 
-                castigo.Usuario.Add(usuario);   
-                usuario.Castigo.Add(castigo);
+                usuario.Tarea.Add(tarea);
 
                 db.Entry(tarea).State = EntityState.Modified;
-                db.Entry(castigo).State = EntityState.Modified;
                 db.Entry(usuario).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("ObtenerTareasAsignadas");
