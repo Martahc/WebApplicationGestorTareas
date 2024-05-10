@@ -27,6 +27,7 @@
         </td>
         <td>
             @Html.ActionLink("Detalles", "Detalles", new { id = item.Id })
+            @Html.ActionLink("Eliminar", "EliminarPerfil", new { idUsuario = item.Id })
         </td>
     </tr>
 }
