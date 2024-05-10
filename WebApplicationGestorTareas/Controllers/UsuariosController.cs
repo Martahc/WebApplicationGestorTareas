@@ -1,7 +1,10 @@
 ﻿using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Web;
 using System.Web.Mvc;
+using WebApplicationGestorTareas.Models;
 
 namespace WebApplicationGestorTareas.Controllers
 {
@@ -131,6 +134,124 @@ namespace WebApplicationGestorTareas.Controllers
                 return HttpNotFound();
             }
             return View(usuario);
+        }
+
+        // GET: Usuario/EditarPerfil/5
+        public ActionResult EditarPerfil(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Usuario usuario = db.Usuario.Find(id);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+            UsuarioDto usuarioDto = new UsuarioDto()
+            {
+                Id = usuario.Id,
+                Nombre = usuario.Nombre,
+                Contraseña = usuario.Contraseña,
+                Email = usuario.Email,
+                Telefono = usuario.Telefono,
+                Puntos = usuario.Puntos,
+                Imagen = usuario.Imagen,
+                Rol_Id = usuario.Rol_Id
+            };
+            ViewBag.Roles = db.Rol.ToList();
+            ViewBag.Rol_Id = new SelectList(db.Rol, "Id", "Nombre", usuario.Rol_Id);
+            return View(usuarioDto);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditarPerfil([Bind(Include = "Id,Nombre,Email,Telefono,Imagen,Rol_Id")] UsuarioDto usuarioDto, HttpPostedFileBase archivoImagen)
+        {
+            var usuarioExistente = db.Usuario.Find(usuarioDto.Id);
+
+            if (usuarioExistente != null)
+            {
+                usuarioExistente.Nombre = usuarioDto.Nombre;
+                usuarioExistente.Email = usuarioDto.Email;
+                usuarioExistente.Telefono = usuarioDto.Telefono;
+                usuarioExistente.Rol_Id = usuarioDto.Rol_Id;
+                usuarioExistente.Rol = db.Rol.Find(usuarioDto.Rol_Id);
+                Session["UserRol"] = usuarioExistente.Rol.Nombre;
+
+                if (archivoImagen != null && archivoImagen.ContentLength > 0)
+                {
+                    var fileName = Path.GetFileName(archivoImagen.FileName);
+                    var path = Path.Combine(Server.MapPath("~/Content/"), fileName);
+                    archivoImagen.SaveAs(path);
+
+                    usuarioExistente.Imagen = fileName;
+                }
+
+                db.Entry(usuarioExistente).State = EntityState.Modified;
+                db.SaveChanges();
+
+                return RedirectToAction("VerMiPerfil");
+            }
+
+            return HttpNotFound();
+        }
+
+
+
+        // DELETE: Usuarios/5/Premios/5
+        public ActionResult EliminarPerfil(int? idUsuario)
+        {
+            if (idUsuario == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Usuario usuario = db.Usuario.Find(idUsuario);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+
+            ViewBag.idUsuario = idUsuario;
+            return View(usuario);
+        }
+
+        [HttpPost, ActionName("EliminarPerfil")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeletePerfilConfirmed(int? idUsuario)
+        {
+            Usuario usuario = db.Usuario.Find(idUsuario);
+            var tareas = usuario.Tarea.ToList();
+            var premios = usuario.Premio.ToList();
+            var castigos = usuario.Castigo.ToList();
+
+            foreach (var elem in tareas)
+            {
+                Tarea tarea = db.Tarea.Find(elem.Id);
+                db.Tarea.Remove(tarea);
+            }
+
+            foreach (var elem in castigos)
+            {
+                Castigo castigo = db.Castigo.Find(elem.Id);
+                castigo.Usuario.Remove(usuario);
+                db.Entry(castigo).State = EntityState.Modified;
+
+            }
+
+            foreach (var elem in premios)
+            {
+                Premio premio = db.Premio.Find(elem.Id);
+                premio.Usuario.Remove(usuario);
+                db.Entry(premio).State = EntityState.Modified;
+
+            }
+
+            db.Usuario.Remove(usuario);
+            db.SaveChanges();
+            return RedirectToAction("ObtenerUsuarios");
+
         }
 
         // GET: ver mis premios / ver premios de un usuario
