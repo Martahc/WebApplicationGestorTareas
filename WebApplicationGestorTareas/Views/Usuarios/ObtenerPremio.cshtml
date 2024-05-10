@@ -1,0 +1,42 @@
+﻿@model WebApplicationGestorTareas.Premio
+
+@{
+    ViewBag.Title = "Detalles";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Premio</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Descripcion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Descripcion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Puntos)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Puntos)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Eliminar", "EliminarPremio", new { idUsuario = ViewBag.idUsuario, idPremio = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

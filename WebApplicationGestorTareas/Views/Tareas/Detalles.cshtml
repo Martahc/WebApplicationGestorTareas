@@ -1,0 +1,91 @@
+﻿@model WebApplicationGestorTareas.Tarea
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Tarea @Html.DisplayFor(model => model.Nombre) </h2>
+
+<div>
+    <h4>Tarea</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Plazo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Plazo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Puntos)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Puntos)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NivelDificultad)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NivelDificultad)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Estado)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Estado)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaInicio)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FechaInicio)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaFin)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FechaFin)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Castigo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Castigo.Nombre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Usuario)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Usuario.Nombre)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Modificar tarea", "ModificarTarea", new { id = Model.Id }) |
+    @Html.ActionLink("Eliminar tarea", "BorrarTarea", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "ObtenerTareas")
+</p>

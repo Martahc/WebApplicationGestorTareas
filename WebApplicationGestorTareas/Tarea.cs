@@ -16,7 +16,7 @@ namespace WebApplicationGestorTareas
     {
         public int Id { get; set; }
         public string Nombre { get; set; }
-        public Nullable<System.DateTime> Plazo { get; set; }
+        public Nullable<int> Plazo { get; set; }
         public Nullable<int> Puntos { get; set; }
         public string NivelDificultad { get; set; }
         public string Estado { get; set; }

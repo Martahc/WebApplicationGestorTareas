@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -30,17 +31,28 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 using (GestorTareasEntities db = new GestorTareasEntities())
                 {
-                    var obj = db.Usuario.Where(a => a.Nombre.Equals(objUser.Nombre) && a.Contraseña.Equals(objUser.Contraseña)).FirstOrDefault();
+                    var obj = db.Usuario
+                                .Include(u => u.Rol) 
+                                .FirstOrDefault(a => a.Nombre == objUser.Nombre && a.Contraseña == objUser.Contraseña);
+
+
                     if (obj != null)
                     {
                         Session["UserID"] = obj.Id.ToString();
                         Session["UserName"] = obj.Nombre.ToString();
+                        Session["UserRol"] = obj.Rol.Nombre;
                         return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Usuario y/o contraseña incorrectos"); 
                     }
                 }
             }
-            return View(objUser);
+
+            return View(objUser); 
         }
+
 
         public ActionResult Registro()
         {
@@ -51,11 +63,12 @@ namespace WebApplicationGestorTareas.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Registro([Bind(Include = "Id,Nombre,Email,Contraseña,Telefono,Imagen,Rol_Id")] Usuario usuario)
+        public ActionResult Registro([Bind(Include = "Id,Nombre,Email,Contraseña,Telefono,Imagen,Rol_Id")] UsuarioDto usuarioDto)
         {
-            var existingUser = db.Usuario.FirstOrDefault(a => a.Id == usuario.Id);
+            var existingUser = db.Usuario.FirstOrDefault(a => a.Nombre == usuarioDto.Nombre);
             if (existingUser == null)
             {
+                Usuario usuario = usuarioDto.CopyFromDto();
                 if (ModelState.IsValid)
                 {
                     usuario.Rol = db.Rol.Find(usuario.Rol_Id);
@@ -63,6 +76,7 @@ namespace WebApplicationGestorTareas.Controllers
                     db.SaveChanges();
                     Session["UserID"] = usuario.Id.ToString();
                     Session["UserName"] = usuario.Nombre.ToString();
+                    Session["UserRol"] = usuario.Rol.Nombre;
                     return RedirectToAction("Index", "Home");
                 }
             }
@@ -70,14 +84,15 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 ModelState.AddModelError("", "El usuario ya existe.");
             }
-            ViewBag.Rol_Id = new SelectList(db.Rol, "Id", "Nombre", usuario.Rol_Id);
-            return View(usuario);
+            ViewBag.Rol_Id = new SelectList(db.Rol, "Id", "Nombre", usuarioDto.Rol_Id);
+            return View(usuarioDto);
         }
 
         public ActionResult Logout()
         {
             Session["UserID"] = null;
             Session["UserName"] = null;
+            Session["UserRol"] = null;
             Session.Abandon();
             return RedirectToAction("Index", "Home");
         }
@@ -89,40 +104,45 @@ namespace WebApplicationGestorTareas.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult RecuperarContraseña(string UsuarioCorreo, string NuevaContraseña, string ConfirmarNuevaContraseña)
+        public ActionResult RecuperarContraseña(string UsuarioCorreo, UsuarioContraseñaDto usuarioDto)
         {
             if (ModelState.IsValid)
             {
+                string NuevaContraseña = usuarioDto.NuevaContraseña;
+                string ConfirmarNuevaContraseña = usuarioDto.ConfirmarNuevaContraseña;
+
                 var usuario = db.Usuario.FirstOrDefault(u => u.Nombre.Equals(UsuarioCorreo) || u.Email.Equals(UsuarioCorreo));
 
-                if (usuario != null && NuevaContraseña == ConfirmarNuevaContraseña)
-                {
+                if (usuario != null)
+                {                 
                     usuario.Contraseña = NuevaContraseña;
                     db.Entry(usuario).State = EntityState.Modified;
                     db.SaveChanges();
 
-                    return RedirectToAction("Login");
+                    return RedirectToAction("Login");                  
                 }
                 else
                 {
-                    ModelState.AddModelError("", "No se pudo recuperar la contraseña. Verifica tus datos.");
+                    ModelState.AddModelError("", "No se encontró el usuario.");
                     return View();
                 }
             }
             return View();
         }
 
+
         #endregion
 
+        #region usuario
 
         // GET: ver perfiles
-        public ActionResult Index()
+        public ActionResult ObtenerUsuarios()
         {
             return View(db.Usuario.ToList());
         }
 
-        // GET: ver detalles de un perfil / ver mi perfil --> ver puntos
-        public ActionResult Details(int? id)
+        // GET: ver detalles de un perfil --> ver puntos
+        public ActionResult Detalles(int? id)
         {
             if (id == null)
             {
@@ -254,9 +274,49 @@ namespace WebApplicationGestorTareas.Controllers
 
         }
 
-        // GET: ver mis premios / ver premios de un usuario
-        public ActionResult ObtenerPremios(int? id)
+        public ActionResult VerMiPerfil()
         {
+            int id = int.Parse(Session["UserID"].ToString());
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Usuario usuario = db.Usuario.Find(id);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+            return View(usuario);
+        }
+
+        #region imagen
+        public ActionResult GetImage(string imageName)
+        {
+            string imagePath = Server.MapPath("~/Content/" + imageName);
+            if (System.IO.File.Exists(imagePath))
+            {
+                using (FileStream fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                {
+                    using (BinaryReader br = new BinaryReader(fs))
+                    {
+                        byte[] imageBytes = br.ReadBytes((int)fs.Length);
+                        return File(imageBytes, "image/jpeg");
+                    }
+                }
+            }
+            return null;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region premios 
+
+        // GET: ver mis premios 
+        public ActionResult ObtenerMisPremios()
+        {
+            int id = int.Parse(Session["UserID"].ToString());
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -269,28 +329,31 @@ namespace WebApplicationGestorTareas.Controllers
             return View(usuario.Premio);
         }
 
-        // GET: ver mi premio / ver premio de un usuario
-        public ActionResult ObtenerPremio(int? idUsuario, int? idPremio)
+        // GET: ver premios de un usuario
+        public ActionResult ObtenerPremios(int? id)
         {
-            if (idUsuario == null)
+            if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-            if (idPremio == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Usuario usuario = db.Usuario.Find(idUsuario);
+            Usuario usuario = db.Usuario.Find(id);
             if (usuario == null)
             {
                 return HttpNotFound();
             }
-            Premio premio = usuario.Premio.First(prem => prem.Id == idPremio);
+            ViewBag.idUsuario = id;
+            return View(usuario.Premio);
+        }
+
+        // GET: ver premio de un usuario
+        public ActionResult ObtenerPremio(int? idUsuario, int? idPremio)
+        {
+            Premio premio = db.Premio.Find(idPremio);
             if (premio == null)
             {
                 return HttpNotFound();
             }
+            ViewBag.idUsuario = idUsuario;
             return View(premio);
         }
 
@@ -312,20 +375,36 @@ namespace WebApplicationGestorTareas.Controllers
                 return HttpNotFound();
             }
 
-            Premio premio = usuario.Premio.First(prem => prem.Id == idPremio);
+            Premio premio = db.Premio.Find(idPremio);
             if (premio == null)
             {
                 return HttpNotFound();
             }
+
+            return View(premio);
+        }
+
+        [HttpPost, ActionName("EliminarPremio")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeletePremioConfirmed(int? idUsuario, int? idPremio)
+        {
+            Usuario usuario = db.Usuario.Find(idUsuario);
+            Premio premio = usuario.Premio.First(prem => prem.Id == idPremio);
             premio.Usuario.Remove(usuario);
             usuario.Premio.Remove(premio);
             db.SaveChanges();
-            return View(usuario);
+            return RedirectToAction("ObtenerPremios", new { id = idUsuario });
+
         }
 
-        // GET: ver mis castigos / ver castigos de un usuario
-        public ActionResult ObtenerCastigos(int? id)
+        #endregion
+
+        #region castigos
+
+        // GET: ver mis castigos
+        public ActionResult ObtenerMisCastigos()
         {
+            int id = int.Parse(Session["UserID"].ToString());
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -338,28 +417,36 @@ namespace WebApplicationGestorTareas.Controllers
             return View(usuario.Castigo);
         }
 
-        // GET: ver mi castigo / ver castigo de un usuario
-        public ActionResult ObtenerCastigo(int? idUsuario, int? idCastigo)
+        // GET: ver castigos de un usuario
+        public ActionResult ObtenerCastigos(int? id)
         {
-            if (idUsuario == null)
+            if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-            if (idCastigo == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Usuario usuario = db.Usuario.Find(idUsuario);
+            Usuario usuario = db.Usuario.Find(id);
             if (usuario == null)
             {
                 return HttpNotFound();
             }
-            Castigo castigo = usuario.Castigo.First(cast => cast.Id == idCastigo);
+            ViewBag.idUsuario = id;
+            return View(usuario.Castigo);
+        }
+
+        // GET: ver castigo de un usuario
+        public ActionResult ObtenerCastigo(int? idUsuario, int? idCastigo)
+        {
+            if (idCastigo == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Castigo castigo = db.Castigo.First(cast => cast.Id == idCastigo);
             if (castigo == null)
             {
                 return HttpNotFound();
             }
+            ViewBag.idUsuario = idUsuario;
             return View(castigo);
         }
 
@@ -386,15 +473,30 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
+
+            return View(castigo);
+        }
+
+        [HttpPost, ActionName("EliminarCastigo")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteCastigoConfirmed(int? idUsuario, int? idCastigo)
+        {
+            Usuario usuario = db.Usuario.Find(idUsuario);
+            Castigo castigo = usuario.Castigo.First(cast => cast.Id == idCastigo);
             castigo.Usuario.Remove(usuario);
             usuario.Castigo.Remove(castigo);
             db.SaveChanges();
-            return View(usuario);
+            return RedirectToAction("ObtenerCastigos", new { id = idUsuario });
         }
 
+        #endregion
+
+        #region tareas
+
         // GET: Usuarios/5/Tareas
-        public ActionResult ObtenerTareas(int? id)
+        public ActionResult ObtenerMisTareas()
         {
+            int id = int.Parse(Session["UserID"].ToString());
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -407,20 +509,29 @@ namespace WebApplicationGestorTareas.Controllers
             return View(usuario.Tarea);
         }
 
-        // PUT: Usuarios/5/Tareas/5/TareaCompletada
-        [HttpPut]
-        [ValidateAntiForgeryToken]
-        public ActionResult MarcarTareaCompletada(int? idUsuario, int? idTarea, [Bind(Include = "Estado")] Tarea tareaModificada)
+        public ActionResult CambiarEstado(int idTarea)
         {
-            if (idUsuario == null)
+            Tarea tarea = db.Tarea.Find(idTarea);
+            if (tarea == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            if (idTarea == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HttpNotFound();
             }
 
+            if (tarea.Estado == "Asignada")
+            {
+                tarea.Estado = "En progreso";
+                db.Entry(tarea).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
+            return RedirectToAction("ObtenerMisTareas");
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult MarcarTareaCompletada(int idUsuario, int idTarea, string estadoTarea)
+        {
             Usuario usuario = db.Usuario.Find(idUsuario);
             if (usuario == null)
             {
@@ -432,18 +543,53 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
-            if (ModelState.IsValid)
+
+            tarea.Estado = estadoTarea;
+            tarea.FechaFin = DateTime.Now;
+           
+            DateTime fechaLimite = tarea.FechaInicio.Value.AddDays(tarea.Plazo.Value);
+
+            if (tarea.FechaFin > fechaLimite)
             {
-                tarea.Estado = tareaModificada.Estado;
-                db.Entry(tarea).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                Castigo castigo = db.Castigo.Find(tarea.Castigo_Id);
+                usuario.Castigo.Add(castigo);
+                castigo.Usuario.Add(usuario);
+                db.Entry(castigo).State = EntityState.Modified;
             }
-            ViewBag.Castigo_Id = new SelectList(db.Castigo, "Id", "Nombre", tarea.Castigo_Id);
-            ViewBag.Usuario_Id = new SelectList(db.Usuario, "Id", "Nombre", tarea.Usuario_Id);
-            return View(tarea);
+            else
+            {
+                if (usuario.Puntos.HasValue && tarea.Puntos.HasValue)
+                {
+                    usuario.Puntos += tarea.Puntos;
+                }
+                else if (!usuario.Puntos.HasValue && tarea.Puntos.HasValue)
+                {
+                    usuario.Puntos = tarea.Puntos;
+                }
+
+                var premio = db.Premio
+                .Where(p => p.Puntos <= usuario.Puntos)
+                .OrderByDescending(p => p.Puntos)
+                .FirstOrDefault();
+
+                if (premio != null)
+                {
+                    usuario.Premio.Add(premio);
+                    premio.Usuario.Add(usuario);                   
+                    db.Entry(premio).State = EntityState.Modified;
+
+                    usuario.Puntos -= premio.Puntos;
+                }
+            }
+
+            db.Entry(tarea).State = EntityState.Modified;
+            db.Entry(usuario).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return RedirectToAction("ObtenerMisTareas");
         }
 
+        #endregion
 
         protected override void Dispose(bool disposing)
         {
