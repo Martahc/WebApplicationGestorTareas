@@ -22,16 +22,17 @@ namespace WebApplicationGestorTareas.Controllers
         // POST: Castigos/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CrearCastigo([Bind(Include = "Id,Nombre,Descripcion,Duracion")] CastigoDto CastigoDto)
+        public ActionResult CrearCastigo([Bind(Include = "Id,Nombre,Descripcion,Plazo")] CastigoDto CastigoDto)
         {
             Castigo castigo = CastigoDto.CopyFromDto();
             if (ModelState.IsValid)
-            {
+            {                             
                 db.Castigo.Add(castigo);
                 db.SaveChanges();
-                return RedirectToAction("VerMiPerfil", "Usuarios");
+                return RedirectToAction("Index", "Home");
             }
-            return View(CastigoDto);
+
+            return View(castigo);
         }
 
         protected override void Dispose(bool disposing)
