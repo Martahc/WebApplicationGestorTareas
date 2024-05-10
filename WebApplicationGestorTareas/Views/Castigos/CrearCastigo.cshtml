@@ -1,60 +1,73 @@
 ﻿@model WebApplicationGestorTareas.Models.CastigoDto
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Crear Castigo";
 }
 
-<h2>Crear castigo</h2>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Create Castigo</title>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
+</head>
+
+<body style="background-color: #f0616b;">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="text-left">Crear castigo <i class="fas fa-handcuffs fa-bounce"></i></h2>
+                <hr />
+
+                <form asp-action="CrearCastigo" method="post">
+
+                    @Html.AntiForgeryToken()
+                    <div class="card">
+                        <div class="card-body">
+
+                            <div class="mb-3">
+                                <label for="Nombre" class="form-label">Nombre del castigo</label>
+                                <input type="text" id="Nombre" name="Nombre" class="form-control" required="required" maxlength="20" title="El nombre del castigo es obligatorio (máximo 20 caracteres).">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Descripcion" class="form-label">Descripción del castigo</label>
+                                <input type="text" id="Descripcion" name="Descripcion" class="form-control" maxlength="200" title="La descripción del castigo no puede exceder los 200 caracteres.">
+                            </div>
 
 
-@using (Html.BeginForm()) 
-{
-    @Html.AntiForgeryToken()
-    
-<div class="form-horizontal">
-    <h4>Castigo</h4>
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    <div class="form-group">
-        @Html.LabelFor(model => model.Nombre, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
-        </div>
-    </div>
+                            <div class="mb-3">
+                                <label for="Duracion" class="form-label">Duración del castigo</label>
+                                <div class="input-group">
+                                    <input type="number" id="Duracion" name="Duracion" class="form-control" required="required" min="1" max="30" title=" La duración debe ser un número positivo.">
+                                    <span class="input-group-text">días</span>
+                                </div>
+                                </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Descripcion, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Descripcion, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Descripcion, "", new { @class = "text-danger" })
-        </div>
-    </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Duracion, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            <div class="input-group">
-                @Html.EditorFor(model => model.Duracion, new { htmlAttributes = new { @class = "form-control" } })
-                <span class="input-group-addon" style="margin-left: 15px; margin-top: 10px;">días</span>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-light" style="border-color:black;">
+                                        Crear
+                                    </button>
+                                </div>
+                            </div>
+                    </div>
+                </form>
+
             </div>
-            @Html.ValidationMessageFor(model => model.Duracion, "", new { @class = "text-danger" })
         </div>
     </div>
 
-
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Crear castigo" class="btn btn-default" />
-        </div>
+    <div class="container mt-3">
+        <a href="@Url.Action("VerMiPerfil","Usuarios")" class="btn btn-secondary" style="padding:4px 15px">
+            <i class="fas fa-arrow-left"></i>
+        </a>
     </div>
-</div>
-}
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+</html>
