@@ -321,6 +321,8 @@
     <Content Include="Views\Usuarios\EliminarPremio.cshtml" />
     <Content Include="Views\Usuarios\ObtenerPremios.cshtml" />
     <Content Include="Views\Usuarios\ObtenerUsuarios.cshtml" />
+    <Content Include="Views\Usuarios\EditarPerfil.cshtml" />
+    <Content Include="Views\Usuarios\EliminarPerfil.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

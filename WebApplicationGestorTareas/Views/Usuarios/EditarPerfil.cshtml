@@ -1,0 +1,108 @@
+﻿@model WebApplicationGestorTareas.Models.UsuarioDto
+
+@{
+    ViewBag.Title = "Editar Perfil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
+
+    <style>
+    
+    .btn-primary {
+        background-color: #e91e63;
+        border-color: #e91e63;
+    }
+
+        .btn-primary:hover {
+            background-color: #e91e63;
+        }
+
+    .btn-secondary {
+        background-color: #e91e63;
+        border-color: #e91e63;
+    }
+
+        .btn-secondary:hover {
+            background-color: #e91e63;
+        }
+
+    </style>
+</head>
+
+<body style="background-color: #f7cac9;">
+    <div class="container mt-4">
+        <h2 class="text-center" style="color: #e91e63; margin-bottom:20px;">Editar Perfil <i class="fa-solid fa-user-edit"></i></h2>
+        <div class="card" style=" background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+
+            <div class="card-body" style=" padding: 20px;">
+                @using (Html.BeginForm("EditarPerfil", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="row mb-3">
+                        <label for="Nombre" class="col-md-4 col-form-label">Nombre</label>
+                        <div class="col-md-10">
+                            <input type="text" id="Nombre" name="Nombre" value="@Model.Nombre" class="form-control" required="required" maxlength="50">
+                            <div class="invalid-feedback">
+                                El nombre del usuario es obligatorio (máximo 50 caracteres).
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label for="Email" class="col-md-4 col-form-label">Email</label>
+                        <div class="col-md-10">
+                            <input type="text" id="Email" name="Email" value="@Model.Email" class="form-control" required="required" title=" El email del usuario es obligatorio.">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label for="Telefono" class="col-md-4 col-form-label">Teléfono</label>
+                        <div class="col-md-10">
+                            <input type="text" id="Telefono" name="Telefono" value="@Model.Telefono" class="form-control" pattern="^\d{9}$" title="Ingrese un número de teléfono válido (9 dígitos).">
+                        </div>
+                    </div>
+
+
+                    <div class="row mb-3">
+                        <label for="Imagen" class="col-md-4 col-form-label">Imagen</label>
+                        <div class="col-md-10">
+                            <input type="file" name="ArchivoImagen" accept="image/jpeg, image/png" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label for="Rol_Id" class="col-md-4 col-form-label">Rol</label>
+                        <div class="col-md-10">
+                            <select class="form-select" id="Rol_Id" name="Rol_Id" required title=" Por favor, seleccione un rol.">
+                                <option value="">Seleccione un Rol</option>
+                                @foreach (var rol in ViewBag.Roles)
+                                {
+                                    <option value="@rol.Id" @(Model.Rol_Id == rol.Id ? "selected" : "")>@rol.Nombre</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-primary">Editar</button>
+                        @Html.ActionLink("Cancelar", "VerMiPerfil", null, new { @class = "btn btn-secondary" })
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
