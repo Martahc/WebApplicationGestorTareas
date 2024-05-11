@@ -15,7 +15,7 @@ namespace WebApplicationGestorTareas
         }
 
         public ActionResult CrearPremio()
-        {           
+        {
             return View();
         }
 
@@ -29,9 +29,9 @@ namespace WebApplicationGestorTareas
             {
                 db.Premio.Add(premio);
                 db.SaveChanges();
-                return RedirectToAction("Index","Home");
+                return RedirectToAction("VerMiPerfil", "Usuarios");
             }
-            return View(premio);
+            return View(premioDto);
         }
 
         protected override void Dispose(bool disposing)
