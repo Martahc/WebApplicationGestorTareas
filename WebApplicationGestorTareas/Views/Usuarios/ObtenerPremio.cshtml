@@ -4,39 +4,54 @@
     ViewBag.Title = "Detalles";
 }
 
-<h2>Details</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
 
-<div>
-    <h4>Premio</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
+</head>
+<body style="background-color: #ffb983;">
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-body">
+                <h2 style="font-size: 2rem;text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);"> <i class="fa-solid fa-circle-info"></i>  Premio:</h2>
+                <hr />
 
-        <dd>
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
+                <dl class="row">
+                    <dt class="col-sm-3">Nombre:</dt>
+                    <dd class="col-sm-9">@Model.Nombre</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Descripcion)
-        </dt>
+                    <dt class="col-sm-3">Usuario:</dt>
+                    <dd class="col-sm-9">@Model.Usuario.FirstOrDefault(u => u.Id == ViewBag.idUsuario).Nombre</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Descripcion)
-        </dd>
+                    <dt class="col-sm-3">Descripción:</dt>
+                    <dd class="col-sm-9">@Model.Descripcion</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Puntos)
-        </dt>
+                    <dt class="col-sm-3">Puntos:</dt>
+                    <dd class="col-sm-9">@Model.Puntos</dd>
+                </dl>
 
-        <dd>
-            @Html.DisplayFor(model => model.Puntos)
-        </dd>
+      
 
-    </dl>
-</div>
-<p>
-    @Html.ActionLink("Eliminar", "EliminarPremio", new { idUsuario = ViewBag.idUsuario, idPremio = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+            <div class="mt-4">
+
+                <a href="@Url.Action("EliminarPremio", new { idUsuario = ViewBag.idUsuario, idPremio = Model.Id })" class="btn btn-danger mr-2">
+                    <i class="fas fa-trash"></i> Eliminar
+                </a>
+
+            </div>
+            </div>
+            </div>
+
+            <a href="@Url.Action("ObtenerPremios", new { id = ViewBag.idUsuario })" class="btn btn-secondary" style="margin-top:20px">
+                <i class="fas fa-arrow-left"></i> Volver a los premios
+            </a>
+            </div>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
