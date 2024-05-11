@@ -4,29 +4,46 @@
     ViewBag.Title = "Delete";
 }
 
-<h2>Eliminar</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
 
-<h3>¿Estas seguro de que quieres eliminarlo?</h3>
-<div>
-    <h4>Premio</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
+</head>
 
-        <dd>
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
+<body style="background-color: #f1c3c3; padding-top: 20px;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card mt-5 border-danger">
+                    <div class="card-body">
+                        <h4 class="card-title text-danger">¿Estás seguro de que quieres eliminar este premio? <i class="fa-solid fa-trash fa-beat-fade fa-xs" style="color: #d81313;"></i></h4>
+                        <hr>
+                        <dl class="row">
+                            <dt class="col-sm-4 text-muted">Premio:</dt>
+                            <dd class="col-sm-8">@Model.Nombre</dd>
+                            <dt class="col-sm-4 text-muted">Descripcion:</dt>
+                            <dd class="col-sm-8">@Model.Descripcion</dd>
+                        </dl>
 
-    </dl>
+                        @using (Html.BeginForm())
+                        {
+                            @Html.AntiForgeryToken()
 
-    @using (Html.BeginForm()) {
-        @Html.AntiForgeryToken()
-
-        <div class="form-actions no-color">
-            <input type="submit" value="Eliminar" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index")
+                    <div class="text-center mt-4">
+                        <input type="submit" value="Eliminar" class="btn btn-danger mr-3" />
+                        <a href="@Url.Action("ObtenerPremios", new { id = ViewBag.idUsuario })" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                        }
+                    </div>
+                </div>
+            </div>
         </div>
-    }
-</div>
+    </div>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
