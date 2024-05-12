@@ -547,7 +547,7 @@ namespace WebApplicationGestorTareas.Controllers
         #region tareas
 
         // GET: Usuarios/5/Tareas
-        public ActionResult ObtenerMisTareas()
+        public ActionResult ObtenerMisTareas(string sortOrder, string currentFilter, int? page)
         {
             int id = int.Parse(Session["UserID"].ToString());
             if (id == null)
@@ -559,7 +559,13 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
-            return View(usuario.Tarea);
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.CurrentFilter = currentFilter;
+
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            return View(usuario.Tarea.ToList().ToPagedList(pageNumber, pageSize));
+
         }
 
         public ActionResult CambiarEstado(int idTarea)
@@ -599,7 +605,7 @@ namespace WebApplicationGestorTareas.Controllers
 
             tarea.Estado = estadoTarea;
             tarea.FechaFin = DateTime.Now;
-           
+
             DateTime fechaLimite = tarea.FechaInicio.Value.AddDays(tarea.Plazo.Value);
 
             if (tarea.FechaFin > fechaLimite)
@@ -608,6 +614,9 @@ namespace WebApplicationGestorTareas.Controllers
                 usuario.Castigo.Add(castigo);
                 castigo.Usuario.Add(usuario);
                 db.Entry(castigo).State = EntityState.Modified;
+
+                TempData["SuccessMessage"] = "Tarea fallida. Recibes un castigo";
+
             }
             else
             {
@@ -628,10 +637,13 @@ namespace WebApplicationGestorTareas.Controllers
                 if (premio != null)
                 {
                     usuario.Premio.Add(premio);
-                    premio.Usuario.Add(usuario);                   
+                    premio.Usuario.Add(usuario);
                     db.Entry(premio).State = EntityState.Modified;
 
                     usuario.Puntos -= premio.Puntos;
+
+                    TempData["SuccessMessage"] = "¡Tarea completada exitosamente! Has ganado un premio.";
+
                 }
             }
 
