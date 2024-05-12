@@ -1,9 +1,12 @@
-﻿using System;
+﻿using PagedList;
+using System;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Web;
 using System.Web.Mvc;
+using WebApplicationGestorTareas.Models;
 
 namespace WebApplicationGestorTareas.Controllers
 {
@@ -29,18 +32,30 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 using (GestorTareasEntities db = new GestorTareasEntities())
                 {
-                    var obj = db.Usuario.Where(a => a.Nombre.Equals(objUser.Nombre) && a.Contraseña.Equals(objUser.Contraseña)).FirstOrDefault();
+                    var obj = db.Usuario
+                                .Include(u => u.Rol)
+                                .FirstOrDefault(a => a.Nombre == objUser.Nombre && a.Contraseña == objUser.Contraseña);
+
+
                     if (obj != null)
                     {
                         Session["UserID"] = obj.Id.ToString();
                         Session["UserName"] = obj.Nombre.ToString();
                         Session["UserRol"] = obj.Rol.Nombre;
-                        return RedirectToAction("Index", "Home");
+                      
+
+                        return RedirectToAction("VerMiPerfil");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Usuario y/o contraseña incorrectos");
                     }
                 }
             }
+
             return View(objUser);
         }
+
 
         public ActionResult Registro()
         {
@@ -51,33 +66,50 @@ namespace WebApplicationGestorTareas.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Registro([Bind(Include = "Id,Nombre,Email,Contraseña,Telefono,Imagen,Rol_Id")] Usuario usuario)
+        public ActionResult Registro([Bind(Include = "Id,Nombre,Email,Contraseña,Telefono,Imagen,Rol_Id")] UsuarioDto usuarioDto, HttpPostedFileBase ArchivoImagen)
         {
-            var existingUser = db.Usuario.FirstOrDefault(a => a.Id == usuario.Id);
+            var existingUser = db.Usuario.FirstOrDefault(a => a.Nombre == usuarioDto.Nombre);
             if (existingUser == null)
             {
+                Usuario usuario = usuarioDto.CopyFromDto();
                 if (ModelState.IsValid)
                 {
+                    if (ArchivoImagen != null && ArchivoImagen.ContentLength > 0)
+                    {
+                        var fileName = Path.GetFileName(ArchivoImagen.FileName);
+                        var path = Path.Combine(Server.MapPath("~/Content/"), fileName);
+                        ArchivoImagen.SaveAs(path);
+
+                        usuario.Imagen = fileName;
+                    }
+
                     usuario.Rol = db.Rol.Find(usuario.Rol_Id);
                     db.Usuario.Add(usuario);
                     db.SaveChanges();
                     Session["UserID"] = usuario.Id.ToString();
                     Session["UserName"] = usuario.Nombre.ToString();
-                    return RedirectToAction("Index", "Home");
+                    Session["UserRol"] = usuario.Rol.Nombre;
+
+                    Response.Cookies["CastigosCount"].Value = "0";
+                    Response.Cookies["PremiosCount"].Value = "0";
+                    Response.Cookies["TareasCount"].Value = "0";
+
+                    return RedirectToAction("VerMiPerfil");
                 }
             }
             else
             {
                 ModelState.AddModelError("", "El usuario ya existe.");
             }
-            ViewBag.Rol_Id = new SelectList(db.Rol, "Id", "Nombre", usuario.Rol_Id);
-            return View(usuario);
+            ViewBag.Rol_Id = new SelectList(db.Rol, "Id", "Nombre", usuarioDto.Rol_Id);
+            return View(usuarioDto);
         }
 
         public ActionResult Logout()
         {
             Session["UserID"] = null;
             Session["UserName"] = null;
+            Session["UserRol"] = null;
             Session.Abandon();
             return RedirectToAction("Index", "Home");
         }
@@ -89,13 +121,16 @@ namespace WebApplicationGestorTareas.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult RecuperarContraseña(string UsuarioCorreo, string NuevaContraseña, string ConfirmarNuevaContraseña)
+        public ActionResult RecuperarContraseña(string UsuarioCorreo, UsuarioContraseñaDto usuarioDto)
         {
             if (ModelState.IsValid)
             {
+                string NuevaContraseña = usuarioDto.NuevaContraseña;
+                string ConfirmarNuevaContraseña = usuarioDto.ConfirmarNuevaContraseña;
+
                 var usuario = db.Usuario.FirstOrDefault(u => u.Nombre.Equals(UsuarioCorreo) || u.Email.Equals(UsuarioCorreo));
 
-                if (usuario != null && NuevaContraseña == ConfirmarNuevaContraseña)
+                if (usuario != null)
                 {
                     usuario.Contraseña = NuevaContraseña;
                     db.Entry(usuario).State = EntityState.Modified;
@@ -105,22 +140,26 @@ namespace WebApplicationGestorTareas.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "No se pudo recuperar la contraseña. Verifica tus datos.");
+                    ModelState.AddModelError("", "No se encontró el usuario.");
                     return View();
                 }
             }
             return View();
         }
 
-        #endregion
 
+        #endregion
 
         #region usuario
 
         // GET: ver perfiles
-        public ActionResult ObtenerUsuarios()
+        public ActionResult ObtenerUsuarios(string sortOrder, string currentFilter, int? page)
         {
-            return View(db.Usuario.ToList());
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.CurrentFilter = currentFilter;
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            return View(db.Usuario.ToList().ToPagedList(pageNumber, pageSize));
         }
 
         // GET: ver detalles de un perfil --> ver puntos
@@ -138,10 +177,9 @@ namespace WebApplicationGestorTareas.Controllers
             return View(usuario);
         }
 
-        // GET: ver mi perfil --> ver mis puntos
-        public ActionResult VerMiPerfil()
+        // GET: Usuario/EditarPerfil/5
+        public ActionResult EditarPerfil(int? id)
         {
-            int id = int.Parse(Session["UserID"].ToString());
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -151,10 +189,173 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
+            UsuarioDto usuarioDto = new UsuarioDto()
+            {
+                Id = usuario.Id,
+                Nombre = usuario.Nombre,
+                Contraseña = usuario.Contraseña,
+                Email = usuario.Email,
+                Telefono = usuario.Telefono,
+                Puntos = usuario.Puntos,
+                Imagen = usuario.Imagen,
+                Rol_Id = usuario.Rol_Id
+            };
+            ViewBag.Roles = db.Rol.ToList();
+            ViewBag.Rol_Id = new SelectList(db.Rol, "Id", "Nombre", usuario.Rol_Id);
+            return View(usuarioDto);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditarPerfil([Bind(Include = "Id,Nombre,Email,Telefono,Imagen,Rol_Id")] UsuarioDto usuarioDto, HttpPostedFileBase archivoImagen)
+        {
+            var usuarioExistente = db.Usuario.Find(usuarioDto.Id);
+
+            if (usuarioExistente != null)
+            {
+                usuarioExistente.Nombre = usuarioDto.Nombre;
+                usuarioExistente.Email = usuarioDto.Email;
+                usuarioExistente.Telefono = usuarioDto.Telefono;
+                usuarioExistente.Rol_Id = usuarioDto.Rol_Id;
+                usuarioExistente.Rol = db.Rol.Find(usuarioDto.Rol_Id);
+                Session["UserRol"] = usuarioExistente.Rol.Nombre;
+
+                if (archivoImagen != null && archivoImagen.ContentLength > 0)
+                {
+                    var fileName = Path.GetFileName(archivoImagen.FileName);
+                    var path = Path.Combine(Server.MapPath("~/Content/"), fileName);
+                    archivoImagen.SaveAs(path);
+
+                    usuarioExistente.Imagen = fileName;
+                }
+
+                db.Entry(usuarioExistente).State = EntityState.Modified;
+                db.SaveChanges();
+
+                return RedirectToAction("VerMiPerfil");
+            }
+
+            return HttpNotFound();
+        }
+
+
+        // GET: ver mi perfil --> ver mis puntos
+        public ActionResult VerMiPerfil()
+        {
+            int id = int.Parse(Session["UserID"].ToString());
+            if (id == 0)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Usuario usuario = db.Usuario.Find(id);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+
+            var tareasActuales = usuario.Tarea;
+            int tareasAnteriores = int.Parse(Request.Cookies["TareasCount"]?.Value ?? "0");
+
+            if (tareasActuales.Count > tareasAnteriores)
+            {
+                TempData["NotificationTareas"] = "Tienes nuevas tareas asignadas.";
+            }
+
+            var premiosActuales = usuario.Premio;
+            int premiosAnteriores = int.Parse(Request.Cookies["PremiosCount"]?.Value ?? "0");
+
+            if (premiosActuales.Count == premiosAnteriores - 1)
+            {
+                TempData["NotificationPremios"] = "Te han eliminado un premio.";
+            }
+            else if (premiosActuales.Count < premiosAnteriores)
+            {
+                TempData["NotificationPremios"] = "Te han eliminado unos premios.";
+            }
+
+            var castigosActuales = usuario.Castigo;
+            int castigosAnteriores = int.Parse(Request.Cookies["CastigosCount"]?.Value ?? "0");
+
+            if (castigosActuales.Count == castigosAnteriores - 1)
+            {
+                TempData["NotificationCastigos"] = "Te han eliminado un castigo.";
+            }
+            else if (castigosActuales.Count < castigosAnteriores)
+            {
+                TempData["NotificationCastigos"] = "Te han eliminado unos castigos.";
+            }
+
+            Response.Cookies["UserID"].Value = id.ToString();
+            Response.Cookies["CastigosCount"].Value = castigosActuales.Count.ToString();
+            Response.Cookies["PremiosCount"].Value = premiosActuales.Count.ToString();
+            Response.Cookies["TareasCount"].Value = tareasActuales.Count.ToString();
+
+            Response.Cookies["UserID"].Expires = DateTime.Now.AddHours(1);
+            Response.Cookies["CastigosCount"].Expires = DateTime.Now.AddHours(1);
+            Response.Cookies["PremiosCount"].Expires = DateTime.Now.AddHours(1);
+            Response.Cookies["TareasCount"].Expires = DateTime.Now.AddHours(1);
+
             return View(usuario);
         }
 
+
+        // DELETE: Usuarios/5/Premios/5
+        public ActionResult EliminarPerfil(int? idUsuario)
+        {
+            if (idUsuario == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Usuario usuario = db.Usuario.Find(idUsuario);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+
+            ViewBag.idUsuario = idUsuario;
+            return View(usuario);
+        }
+
+        [HttpPost, ActionName("EliminarPerfil")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeletePerfilConfirmed(int? idUsuario)
+        {
+            Usuario usuario = db.Usuario.Find(idUsuario);
+            var tareas = usuario.Tarea.ToList();
+            var premios = usuario.Premio.ToList();
+            var castigos = usuario.Castigo.ToList();
+
+            foreach (var elem in tareas)
+            {
+                Tarea tarea = db.Tarea.Find(elem.Id);
+                db.Tarea.Remove(tarea);
+            }
+
+            foreach (var elem in castigos)
+            {
+                Castigo castigo = db.Castigo.Find(elem.Id);
+                castigo.Usuario.Remove(usuario);
+                db.Entry(castigo).State = EntityState.Modified;
+
+            }
+
+            foreach (var elem in premios)
+            {
+                Premio premio = db.Premio.Find(elem.Id);
+                premio.Usuario.Remove(usuario);
+                db.Entry(premio).State = EntityState.Modified;
+
+            }
+
+            db.Usuario.Remove(usuario);
+            db.SaveChanges();
+            return RedirectToAction("ObtenerUsuarios");
+
+        }
+
         #region imagen
+
         public ActionResult GetImage(string imageName)
         {
             string imagePath = Server.MapPath("~/Content/" + imageName);
@@ -176,8 +377,35 @@ namespace WebApplicationGestorTareas.Controllers
 
         #endregion
 
-        // GET: ver mis premios / ver premios de un usuario
-        public ActionResult ObtenerPremios(int? id)
+        #region premios 
+
+        // GET: ver mis premios 
+        public ActionResult ObtenerMisPremios(string sortOrder, string currentFilter, int? page)
+        {
+            int id = int.Parse(Session["UserID"].ToString());
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Usuario usuario = db.Usuario.Find(id);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+
+            ViewBag.idUsuario = id;
+
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.CurrentFilter = currentFilter;
+
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            return View(usuario.Premio.ToPagedList(pageNumber, pageSize));
+
+        }
+
+        // GET: ver premios de un usuario
+        public ActionResult ObtenerPremios(int? id, string sortOrder, string currentFilter, int? page)
         {
             if (id == null)
             {
@@ -188,31 +416,26 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
-            return View(usuario.Premio);
+
+            ViewBag.idUsuario = id;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.CurrentFilter = currentFilter;
+
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            return View(usuario.Premio.ToPagedList(pageNumber, pageSize));
+
         }
 
-        // GET: ver mi premio / ver premio de un usuario
+        // GET: ver premio de un usuario
         public ActionResult ObtenerPremio(int? idUsuario, int? idPremio)
         {
-            if (idUsuario == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            if (idPremio == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Usuario usuario = db.Usuario.Find(idUsuario);
-            if (usuario == null)
-            {
-                return HttpNotFound();
-            }
-            Premio premio = usuario.Premio.First(prem => prem.Id == idPremio);
+            Premio premio = db.Premio.Find(idPremio);
             if (premio == null)
             {
                 return HttpNotFound();
             }
+            ViewBag.idUsuario = idUsuario;
             return View(premio);
         }
 
@@ -234,19 +457,59 @@ namespace WebApplicationGestorTareas.Controllers
                 return HttpNotFound();
             }
 
-            Premio premio = usuario.Premio.First(prem => prem.Id == idPremio);
+            Premio premio = db.Premio.Find(idPremio);
             if (premio == null)
             {
                 return HttpNotFound();
             }
+
+            ViewBag.idUsuario = idUsuario;
+            return View(premio);
+        }
+
+        [HttpPost, ActionName("EliminarPremio")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeletePremioConfirmed(int? idUsuario, int? idPremio)
+        {
+            Usuario usuario = db.Usuario.Find(idUsuario);
+            Premio premio = usuario.Premio.First(prem => prem.Id == idPremio);
             premio.Usuario.Remove(usuario);
             usuario.Premio.Remove(premio);
             db.SaveChanges();
-            return View(usuario);
+            return RedirectToAction("ObtenerPremios", new { id = idUsuario });
+
         }
 
-        // GET: ver mis castigos / ver castigos de un usuario
-        public ActionResult ObtenerCastigos(int? id)
+        #endregion
+
+        #region castigos
+
+        // GET: ver mis castigos
+        public ActionResult ObtenerMisCastigos(string sortOrder, string currentFilter, int? page)
+        {
+            int id = int.Parse(Session["UserID"].ToString());
+
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Usuario usuario = db.Usuario.Find(id);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+
+            ViewBag.idUsuario = id;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.CurrentFilter = currentFilter;
+
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            return View(usuario.Castigo.ToPagedList(pageNumber, pageSize));
+        }
+
+        // GET: ver castigos de un usuario
+        public ActionResult ObtenerCastigos(int? id, string sortOrder, string currentFilter, int? page)
         {
             if (id == null)
             {
@@ -257,31 +520,31 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
-            return View(usuario.Castigo);
+
+            ViewBag.idUsuario = id;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.CurrentFilter = currentFilter;
+
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            return View(usuario.Castigo.ToPagedList(pageNumber, pageSize));
+
         }
 
-        // GET: ver mi castigo / ver castigo de un usuario
+        // GET: ver castigo de un usuario
         public ActionResult ObtenerCastigo(int? idUsuario, int? idCastigo)
         {
-            if (idUsuario == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
             if (idCastigo == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Usuario usuario = db.Usuario.Find(idUsuario);
-            if (usuario == null)
-            {
-                return HttpNotFound();
-            }
-            Castigo castigo = usuario.Castigo.First(cast => cast.Id == idCastigo);
+
+            Castigo castigo = db.Castigo.First(cast => cast.Id == idCastigo);
             if (castigo == null)
             {
                 return HttpNotFound();
             }
+            ViewBag.idUsuario = idUsuario;
             return View(castigo);
         }
 
@@ -308,16 +571,30 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
+
+            ViewBag.idUsuario = idUsuario;
+
+            return View(castigo);
+        }
+
+        [HttpPost, ActionName("EliminarCastigo")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteCastigoConfirmed(int? idUsuario, int? idCastigo)
+        {
+            Usuario usuario = db.Usuario.Find(idUsuario);
+            Castigo castigo = usuario.Castigo.First(cast => cast.Id == idCastigo);
             castigo.Usuario.Remove(usuario);
             usuario.Castigo.Remove(castigo);
             db.SaveChanges();
-            return View(usuario);
+            return RedirectToAction("ObtenerCastigos", new { id = idUsuario });
         }
+
+        #endregion
 
         #region tareas
 
         // GET: Usuarios/5/Tareas
-        public ActionResult ObtenerMisTareas()
+        public ActionResult ObtenerMisTareas(string sortOrder, string currentFilter, int? page)
         {
             int id = int.Parse(Session["UserID"].ToString());
             if (id == null)
@@ -329,7 +606,13 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
-            return View(usuario.Tarea);
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.CurrentFilter = currentFilter;
+
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            return View(usuario.Tarea.ToList().ToPagedList(pageNumber, pageSize));
+
         }
 
         public ActionResult CambiarEstado(int idTarea)
@@ -351,7 +634,6 @@ namespace WebApplicationGestorTareas.Controllers
         }
 
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult MarcarTareaCompletada(int idUsuario, int idTarea, string estadoTarea)
@@ -368,19 +650,8 @@ namespace WebApplicationGestorTareas.Controllers
                 return HttpNotFound();
             }
 
-            if (usuario.Puntos.HasValue && tarea.Puntos.HasValue)
-            {
-                usuario.Puntos += tarea.Puntos;
-            }
-            else if (!usuario.Puntos.HasValue && tarea.Puntos.HasValue)
-            {
-                usuario.Puntos = tarea.Puntos;
-            }
-
             tarea.Estado = estadoTarea;
             tarea.FechaFin = DateTime.Now;
-
-            int plazo = tarea.Plazo.Value;
 
             DateTime fechaLimite = tarea.FechaInicio.Value.AddDays(tarea.Plazo.Value);
 
@@ -390,9 +661,21 @@ namespace WebApplicationGestorTareas.Controllers
                 usuario.Castigo.Add(castigo);
                 castigo.Usuario.Add(usuario);
                 db.Entry(castigo).State = EntityState.Modified;
+
+                TempData["SuccessMessage"] = "Tarea fallida. Recibes un castigo";
+
             }
             else
             {
+                if (usuario.Puntos.HasValue && tarea.Puntos.HasValue)
+                {
+                    usuario.Puntos += tarea.Puntos;
+                }
+                else if (!usuario.Puntos.HasValue && tarea.Puntos.HasValue)
+                {
+                    usuario.Puntos = tarea.Puntos;
+                }
+
                 var premio = db.Premio
                 .Where(p => p.Puntos <= usuario.Puntos)
                 .OrderByDescending(p => p.Puntos)
@@ -403,6 +686,11 @@ namespace WebApplicationGestorTareas.Controllers
                     usuario.Premio.Add(premio);
                     premio.Usuario.Add(usuario);
                     db.Entry(premio).State = EntityState.Modified;
+
+                    usuario.Puntos -= premio.Puntos;
+
+                    TempData["SuccessMessage"] = "¡Tarea completada exitosamente! Has ganado un premio.";
+
                 }
             }
 
@@ -414,7 +702,6 @@ namespace WebApplicationGestorTareas.Controllers
         }
 
         #endregion
-
 
         protected override void Dispose(bool disposing)
         {
