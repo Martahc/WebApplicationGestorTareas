@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PagedList;
+using System;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
@@ -314,7 +315,7 @@ namespace WebApplicationGestorTareas.Controllers
         #region premios 
 
         // GET: ver mis premios 
-        public ActionResult ObtenerMisPremios()
+        public ActionResult ObtenerMisPremios(string sortOrder, string currentFilter, int? page)
         {
             int id = int.Parse(Session["UserID"].ToString());
             if (id == null)
@@ -326,11 +327,20 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
-            return View(usuario.Premio);
+
+            ViewBag.idUsuario = id;
+
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.CurrentFilter = currentFilter;
+
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            return View(usuario.Premio.ToPagedList(pageNumber, pageSize));
+
         }
 
         // GET: ver premios de un usuario
-        public ActionResult ObtenerPremios(int? id)
+        public ActionResult ObtenerPremios(int? id, string sortOrder, string currentFilter, int? page)
         {
             if (id == null)
             {
@@ -341,8 +351,15 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
+
             ViewBag.idUsuario = id;
-            return View(usuario.Premio);
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.CurrentFilter = currentFilter;
+
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            return View(usuario.Premio.ToPagedList(pageNumber, pageSize));
+
         }
 
         // GET: ver premio de un usuario
@@ -381,6 +398,7 @@ namespace WebApplicationGestorTareas.Controllers
                 return HttpNotFound();
             }
 
+            ViewBag.idUsuario = idUsuario;
             return View(premio);
         }
 
@@ -402,9 +420,10 @@ namespace WebApplicationGestorTareas.Controllers
         #region castigos
 
         // GET: ver mis castigos
-        public ActionResult ObtenerMisCastigos()
+        public ActionResult ObtenerMisCastigos(string sortOrder, string currentFilter, int? page)
         {
             int id = int.Parse(Session["UserID"].ToString());
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -414,11 +433,18 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
-            return View(usuario.Castigo);
+
+            ViewBag.idUsuario = id;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.CurrentFilter = currentFilter;
+
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            return View(usuario.Castigo.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: ver castigos de un usuario
-        public ActionResult ObtenerCastigos(int? id)
+        public ActionResult ObtenerCastigos(int? id, string sortOrder, string currentFilter, int? page)
         {
             if (id == null)
             {
@@ -429,8 +455,15 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
+
             ViewBag.idUsuario = id;
-            return View(usuario.Castigo);
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.CurrentFilter = currentFilter;
+
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            return View(usuario.Castigo.ToPagedList(pageNumber, pageSize));
+
         }
 
         // GET: ver castigo de un usuario
@@ -473,6 +506,8 @@ namespace WebApplicationGestorTareas.Controllers
             {
                 return HttpNotFound();
             }
+
+            ViewBag.idUsuario = idUsuario;
 
             return View(castigo);
         }

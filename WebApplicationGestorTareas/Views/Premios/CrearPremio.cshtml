@@ -4,53 +4,66 @@
     ViewBag.Title = "Create";
 }
 
-<h2>Crear premio</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Create Premio</title>
 
-@using (Html.BeginForm()) 
-{
-    @Html.AntiForgeryToken()
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
+</head>
 
+<body style="background-color: #ffb983;">
+    <div class="container  mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Crear premio <i class="fa-solid fa-trophy fa-bounce"></i></h2>
+                <hr />
 
-    <div class="form-horizontal">
-        <h4>Premio</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.Nombre, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
-            </div>
-        </div>
+                <form asp-action="CrearPremio" method="post">
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Descripcion, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Descripcion, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Descripcion, "", new { @class = "text-danger" })
-            </div>
-        </div>
+                    @Html.AntiForgeryToken()
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Puntos, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Puntos, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Puntos, "", new { @class = "text-danger" })
-            </div>
-        </div>
+                    <div class="card border-5 border-end border-start">
+                        <div class="card-body">
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Crear premio" class="btn btn-default" />
+                            <div class="mb-3">
+                                <label for="Nombre" class="form-label">Nombre del premio</label>
+                                <input type="text" id="Nombre" name="Nombre" class="form-control" required="required" maxlength="20" title="El nombre del premio es obligatorio (máximo 20 caracteres).">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Descripcion" class="form-label">Descripción del premio</label>
+                                <input type="text" id="Descripcion" name="Descripcion" class="form-control" maxlength="200" title="La descripción del premio no puede exceder los 200 caracteres.">
+
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Puntos" class="form-label">Puntos</label>
+                                <input type="number" id="Puntos" name="Puntos" class="form-control" required="required" min="1" max="100" title=" Los puntos deben ser un número positivo.">
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-outline-dark float-left">Crear</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-}
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+    <div class="container mt-3">
+        <a href="@Url.Action("VerMiPerfil","Usuarios")" class="btn btn-secondary" style="padding:4px 15px">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+    </div>
 
-@section Scripts {
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     @Scripts.Render("~/bundles/jqueryval")
-}
+</body>
+</html>
