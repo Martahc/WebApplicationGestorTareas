@@ -1,97 +1,115 @@
-﻿@model IEnumerable<WebApplicationGestorTareas.Tarea>
+﻿@model PagedList.IPagedList<WebApplicationGestorTareas.Tarea>
+
+@using PagedList.Mvc;
+
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Tareas";
 }
 
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</head>
+
+<body style="background-color: #a6b4da;">
+    <div id="alertPlaceholder"></div>
+
+    <div class="container mt-4">
+
+        <h2 class="text-center" style="padding-bottom: 20px; margin-bottom: 20px;">Mis Tareas  <i class="fa-solid fa-thumbtack fa-shake"></i></h2>
+        <div id="alertPlaceholder" style="position: fixed; top: 20px; right: 20px; z-index: 1000; max-width: 100px;"></div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Plazo (días)</th>
+                        <th>Puntos</th>
+                        <th>Nivel de Dificultad</th>
+                        <th>Estado</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Fin</th>
+                        <th>Castigo</th>
+                        <th>Usuario</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Plazo)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Puntos)</td>
+                            <td>@Html.DisplayFor(modelItem => item.NivelDificultad)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Estado)</td>
+                            <td>@Html.DisplayFor(modelItem => item.FechaInicio)</td>
+                            <td>@Html.DisplayFor(modelItem => item.FechaFin)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Castigo.Nombre)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Usuario.Nombre)</td>
+                            <td>
+                                @if (item.Estado == "Asignada")
+                                {
+                                    @Html.ActionLink("Empezar", "CambiarEstado", new { idTarea = item.Id }, new { @class = "btn btn-primary btn-sm" })
+                                }
+                                @if (item.Estado == "En progreso")
+                                {
+                                    <form method="post" action="@Url.Action("MarcarTareaCompletada", "Usuarios")" style="display: inline;">
+                                        @Html.AntiForgeryToken()
+                                        @Html.Hidden("idUsuario", item.Usuario.Id)
+                                        @Html.Hidden("idTarea", item.Id)
+
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="estadoTarea" name="estadoTarea" value="Completada" @(item.Estado == "Completada" ? "checked" : "") onchange="this.form.submit()">
+                                            <label class="form-check-label" for="estadoTarea">
+                                                Completada
+                                            </label>
+                                        </div>
+                                    </form>
 
 
-<h2>Tareas</h2>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @Html.PagedListPager(Model, page => Url.Action("ObtenerMisTareas",
+new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, page = page }))
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <script type="text/javascript">
+                $(document).ready(function() {
+                    var successMessage = '@Html.Raw(TempData["SuccessMessage"])';
+                    var alertPlaceholder = document.getElementById('alertPlaceholder') || document.body;
+                    var wrapper = document.createElement('div');
+                    wrapper.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+                                            ${successMessage}
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>`;
+                    alertPlaceholder.append(wrapper);
+                });
+                </script>
+
+            }
 
 
+        </div>
+    </div>
+</body>
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Nombre)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Plazo)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Puntos)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.NivelDificultad)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Estado)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.FechaInicio)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.FechaFin)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Castigo)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Usuario)
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Plazo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Puntos)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NivelDificultad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Estado)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaInicio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaFin)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Castigo.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Usuario.Nombre)
-            </td>
-
-            <td>
-                @if (item.Estado == "Asignada")
-                {
-                    @Html.ActionLink("Empezar", "CambiarEstado", new { idTarea = item.Id }, new { @class = "btn btn-primary" })
-                }
-            </td>
-
-            <td>
-                @using (Html.BeginForm("MarcarTareaCompletada", "Usuarios", FormMethod.Post))
-                {
-                    @Html.AntiForgeryToken() <!-- Agregar token de antifalsificación -->
-                    @Html.Hidden("idUsuario", item.Usuario.Id)
-                    @Html.Hidden("idTarea", item.Id)
-                    <input type="checkbox" name="estadoTarea" value="Completada" @(item.Estado == "Completada" ? "checked" : "") onchange="this.form.submit()" />
-                }
-            </td>
-        </tr>
-    }
-
-</table>
 
 
