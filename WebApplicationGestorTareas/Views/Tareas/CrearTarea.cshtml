@@ -4,72 +4,91 @@
     ViewBag.Title = "Create";
 }
 
-<h2>Crear tarea</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
+</head>
+<body style="background-color: #fff3b8;">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Crear Tarea <i class="fa-solid fa-thumbtack fa-bounce"></i></h2>
+                <hr />
+
+                <form method="post" action="@Url.Action("CrearTarea", "Tareas")">
+
+                    @Html.AntiForgeryToken()
+
+                    <div class="card border-5 border-end border-start">
+                        <div class="card-body">
+
+                            <div class="mb-3">
+                                <label for="Nombre" class="form-label">Nombre de la tarea</label>
+                                <input type="text" id="Nombre" name="Nombre" class="form-control" required="required" maxlength="100" title=" El nombre de la tarea es obligatorio (máximo 100 caracteres).">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Plazo" class="form-label">Plazo de la tarea</label>
+                                <div class="input-group">
+                                    <input type="number" id="Plazo" name="Plazo" class="form-control" required="required" min="1" max="30"
+                                           title="El plazo debe ser un número positivo.">
+                                    <span class="input-group-text">días</span>
+                                </div>
+                            </div>
 
 
-@using (Html.BeginForm()) 
-{
-    @Html.AntiForgeryToken()
-    
-<div class="form-horizontal">
-    <h4>Tarea</h4>
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    <div class="form-group">
-        @Html.LabelFor(model => model.Nombre, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
-        </div>
-    </div>
+                            <div class="mb-3">
+                                <label for="Puntos" class="form-label">Puntos</label>
+                                <input type="number" id="Puntos" name="Puntos" class="form-control" required="required" min="1" max="100" title="Los puntos deben ser un número positivo.">
+                            </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Plazo, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            <div class="input-group">
-                @Html.EditorFor(model => model.Plazo, new { htmlAttributes = new { @class = "form-control" } })
-                <span class="input-group-addon" style="margin-left: 15px; margin-top: 10px;">días</span>
+                            <div class="form-group row">
+                                <label for="NivelDificultad" class="col-md-4 col-form-label">Nivel de Dificultad</label>
+                                <div class="col-md-8">
+                                    <select class="form-select" id="NivelDificultad" name="NivelDificultad" required title=" El nivel de dificultad de la tarea es obligatorio.">
+                                        <option value="" disabled selected>Seleccione un nivel de dificultad</option>
+                                        <option value="Fácil">Fácil</option>
+                                        <option value="Intermedio">Intermedio</option>
+                                        <option value="Difícil">Difícil</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group row">
+                                <label for="Castigo_Id" class="col-md-2 col-form-label">Castigo</label>
+                                <div class="col-md-10">
+                                    @Html.DropDownList("Castigo_Id", null, htmlAttributes: new { @class = "form-control", required = "required" })
+                                    <div class="invalid-feedback">
+                                        Por favor, seleccione un castigo.
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-light">Crear</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
             </div>
-            @Html.ValidationMessageFor(model => model.Plazo, "", new { @class = "text-danger" })
         </div>
     </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Puntos, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Puntos, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Puntos, "", new { @class = "text-danger" })
-        </div>
+    <div class="container mt-3">
+        <a href="@Url.Action("VerMiPerfil","Usuarios")" class="btn btn-secondary" style="padding:4px 15px">
+            <i class="fas fa-arrow-left"></i>
+        </a>
     </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.NivelDificultad, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownListFor(model => model.NivelDificultad, new SelectList(new[] { "Fácil", "Intermedio", "Difícil" }), "Seleccione una opción", new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.NivelDificultad, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Castigo_Id, "Castigo", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownList("Castigo_Id", null, htmlAttributes: new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.Castigo_Id, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Crear tarea" class="btn btn-default" />
-        </div>
-    </div>
-</div>
-}
-
-<div>
-    @Html.ActionLink("Back to List", "ObtenerTareas")
-</div>
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

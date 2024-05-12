@@ -3,47 +3,56 @@
 @{
     ViewBag.Title = "Delete";
 }
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
 
-<h2>Eliminar tarea</h2>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
 
-<div>
-    <h4>Tarea</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
+</head>
 
-        <dd>
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-       
-        <dt>
-            @Html.DisplayNameFor(model => model.Estado)
-        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Estado)
-        </dd>
+<body style="background-color: #f1c3c3;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card border-danger" style="margin-top:50px">
+                    <div class="card-body">
+                        <h3 class="card-title text-center mb-4">¿Estas seguro de que quieres eliminar esta tarea? <i class="fa-solid fa-trash fa-beat-fade fa-xs" style="color: #d81313;"></i></h3>
+                        <hr />
 
-        <dt>
-       
-        <dt>
-            @Html.DisplayNameFor(model => model.Usuario)
-        </dt>
+                        <dl class="row">
+                            <dt class="col-sm-4">Nombre:</dt>
+                            <dd class="col-sm-8">@Model.Nombre</dd>
+                            <dt class="col-sm-4">Usuario:</dt>
+                            <dd class="col-sm-5">
+                                @if (Model.Usuario != null)
+                                {
+                                    @Model.Usuario.Nombre
+                                }
+                                else
+                                {
+                                    <h8>Sin asignar</h8>
+                                }
+                            <dt class="col-sm-4">Estado:</dt>
+                            <dd class="col-sm-8">@Model.Estado</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Usuario.Nombre)
-        </dd>
+                        </dl>
 
-    </dl>
+                        <form asp-action="BorrarTarea" method="post">
 
-    @using (Html.BeginForm()) {
-        @Html.AntiForgeryToken()
+                            @Html.AntiForgeryToken()
 
-        <div class="form-actions no-color">
-            <input type="submit" value="Eliminar tarea" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "ObtenerTareas")
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                                <a href="@Url.Action("ObtenerTareas")" class="btn btn-secondary" style="background-color: #6c757d; color: #fff;">Cancelar</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-    }
-</div>
+    </div>
+</body>

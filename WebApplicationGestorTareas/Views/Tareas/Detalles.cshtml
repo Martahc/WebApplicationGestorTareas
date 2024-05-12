@@ -4,88 +4,75 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Tarea @Html.DisplayFor(model => model.Nombre) </h2>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Asignar tarea</title>
 
-<div>
-    <h4>Tarea</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
+</head>
 
-        <dd>
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
+<body style="background-color: #fff3cd;">
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-body">
+                <h2 style="font-size: 1.8rem;text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);"> <i class="fa-solid fa-circle-info"></i> Tarea:</h2>
+                <hr />
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Plazo)
-        </dt>
+                <dl class="row">
+                    <dt class="col-sm-3">Nombre:</dt>
+                    <dd class="col-sm-9">@Model.Nombre</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Plazo)
-        </dd>
+                    <dt class="col-sm-3">Plazo (días):</dt>
+                    <dd class="col-sm-9">@Model.Plazo</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Puntos)
-        </dt>
+                    <dt class="col-sm-3">Puntos:</dt>
+                    <dd class="col-sm-9">@Model.Puntos</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Puntos)
-        </dd>
+                    <dt class="col-sm-3">Nivel de Dificultad:</dt>
+                    <dd class="col-sm-9">@Model.NivelDificultad</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.NivelDificultad)
-        </dt>
+                    <dt class="col-sm-3">Estado:</dt>
+                    <dd class="col-sm-9">@Model.Estado</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.NivelDificultad)
-        </dd>
+                    <dt class="col-sm-3">Fecha de Inicio:</dt>
+                    <dd class="col-sm-9">@Model.FechaInicio</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Estado)
-        </dt>
+                    <dt class="col-sm-3">Fecha de Fin:</dt>
+                    <dd class="col-sm-9">@Model.FechaFin</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Estado)
-        </dd>
+                    <dt class="col-sm-3">Castigo:</dt>
+                    <dd class="col-sm-9">@Model.Castigo.Nombre</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.FechaInicio)
-        </dt>
+                    <dt class="col-sm-3">Usuario:</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.Usuario != null)
+                        {
+                            @Model.Usuario.Nombre
+                        }
+                        else
+                        {
+                            <h8>Sin asignar</h8>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
 
-        <dd>
-            @Html.DisplayFor(model => model.FechaInicio)
-        </dd>
+        <div class="text-center mt-4">
+            <a href="@Url.Action("ModificarTarea", new { id = Model.Id })" class="btn btn-warning mr-2">
+                <i class="fa-regular fa-pen-to-square"></i> Modificar
+            </a>
+            <a href="@Url.Action("BorrarTarea", new { id = Model.Id })" class="btn btn-danger mr-2">
+                <i class="fas fa-trash"></i> Eliminar
+            </a>
+        </div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.FechaFin)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.FechaFin)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Castigo)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Castigo.Nombre)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Usuario)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Usuario.Nombre)
-        </dd>
-
-    </dl>
-</div>
-<p>
-    @Html.ActionLink("Modificar tarea", "ModificarTarea", new { id = Model.Id }) |
-    @Html.ActionLink("Eliminar tarea", "BorrarTarea", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "ObtenerTareas")
-</p>
+        <div class="text-left mt-2">
+            <a href="@Url.Action("ObtenerTareas")" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Volver a las tareas
+            </a>
+        </div>
+    </div>
+</body>
