@@ -24,7 +24,7 @@ namespace WebApplicationGestorTareas
         public int Id { get; set; }
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
-        public Nullable<int> Plazo { get; set; }
+        public Nullable<int> Duracion { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Tarea> Tarea { get; set; }

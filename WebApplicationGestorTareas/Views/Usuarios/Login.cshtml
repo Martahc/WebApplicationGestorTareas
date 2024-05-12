@@ -1,38 +1,80 @@
 ﻿@model WebApplicationGestorTareas.Usuario
 
 @{
+    Layout = null;
+}
+
+
+@{
     ViewBag.Title = "Login";
 }
 
-<h2>Login</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - Mi Aplicación</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.2/css/all.css">
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Nombre, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+    <style>
+
+        .btn-primary,
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background-color: #003366;
+            border-color: #003366;
+        }
+
+        .btn-link,
+        .btn-link:hover,
+        .btn-link:focus {
+            color: #003366;
+        }
+    </style>
+</head>
+<body style="background-image: url('https://static.vecteezy.com/system/resources/previews/007/796/642/non_2x/gradient-background-with-dark-colors-free-vector.jpg'); background-size: cover;">
+
+    <div class="login-container" style="background-color: #ffffff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 40px; max-width: 600px; margin: 0 auto; margin-top:50px">
+
+        <h2 class="login-title" style=" text-align: center; margin-bottom: 20px;">Iniciar sesión</h2>
+
+        <form method="post" action="@Url.Action("Login", "Usuarios")" class="form-horizontal mt-4">
+
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group row">
+                <label for="Nombre" class="col-md-4 col-form-label text-md-right">Nombre:</label>
+                <div class="col-md-6">
+                    <input type="text" id="Nombre" name="Nombre" class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="Contraseña" class="col-md-4 col-form-label text-md-right">Contraseña:</label>
+                <div class="col-md-6">
+                    <input type="password" id="Contraseña" name="Contraseña" class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-12 text-center">
+                    <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="text-center">
+            <p>¿Aún no tienes cuenta? <a href="@Url.Action("Registro", "Usuarios")" class="btn btn-link">Regístrate aquí</a></p>
+            <p><a href="@Url.Action("RecuperarContraseña", "Usuarios")" class="btn btn-link">Recuperar contraseña</a></p>
         </div>
     </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Contraseña, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Contraseña, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Contraseña, "", new { @class = "text-danger" })
-        </div>
-    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Login" class="btn btn-default" />
-        </div>
-    </div>
-
-    <div>
-        @Html.ActionLink("¿Olvidaste tu contraseña?", "RecuperarContraseña")
-    </div>
-}
+</body>
+</html>

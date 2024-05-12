@@ -1,37 +1,75 @@
-﻿@model WebApplicationGestorTareas.Usuario
+﻿@model WebApplicationGestorTareas.Models.UsuarioContraseñaDto
 
 @{
     ViewBag.Title = "Recuperar Contraseña";
+    Layout = null;
 }
 
-<h2>Recuperar Contraseña</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewBag.Title</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
 
-@using (Html.BeginForm("RecuperarContraseña", "Usuarios", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-{
-    @Html.AntiForgeryToken()
+    .title-container {
+        border: 2px solid #007bff;
+        background-color: #f8f9fa;
+        padding: 20px;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 600px; 
+    }
+       
+    </style>
+</head>
+<body style=" background-color: #f4f4f9; font-family: 'Arial', sans-serif; height: 100vh; display: flex; align-items: center; justify-content: center;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="title-container text-lg-center">
+                    <h3>Restablecer Contraseña</h3>
+                    <form method="post" action="@Url.Action("RecuperarContraseña", "Usuarios")" class="form-horizontal" style=" padding: 15px;">
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    <div class="form-group" style="margin-top: 20px;">
-        <div class="col-md-10">
-            @Html.TextBox("UsuarioCorreo", null, new { @class = "form-control", placeholder = "Usuario o Correo Electrónico" })
+                        <div class="form-group" style="padding:5px 25px;">
+                            <label for="UsuarioCorreo" class="col-md-2 control-label"></label>
+                            <div class="col-md-10">
+                                @Html.TextBox("UsuarioCorreo", null, new { @class = "form-control", placeholder = "Usuario o Correo Electrónico" })
+                                <small id="userHelp" class="form-text text-muted">Introduzca su usuario o correo electrónico asociado a la cuenta.</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="padding:14px 25px;">
+                            <label for="NuevaContraseña" class="col-md-2 control-label"></label>
+                            <div class="col-md-10">
+                                @Html.Password("NuevaContraseña", null, new { @class = "form-control", placeholder = "Nueva Contraseña" })
+                                @Html.ValidationMessageFor(model => model.NuevaContraseña, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="padding:14px 25px;">
+                            <label for="ConfirmarNuevaContraseña" class="col-md-2 control-label"></label>
+                            <div class="col-md-10">
+                                @Html.Password("ConfirmarNuevaContraseña", null, new { @class = "form-control", placeholder = "Confirmar Nueva Contraseña" })
+                                @Html.ValidationMessageFor(model => model.ConfirmarNuevaContraseña, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                            @Html.ActionLink("Cancelar", "Login", null, new { @class = "btn btn-secondary" })
+                        </div>
+
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="form-group" style="margin-top: 20px;">
-        <div class="col-md-10">
-            @Html.Password("NuevaContraseña", null, new { @class = "form-control", placeholder = "Nueva Contraseña" })
-            @Html.ValidationMessageFor(model => model.Contraseña, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group" style="margin-top: 20px;" >
-        <div class="col-md-10">
-            @Html.Password("ConfirmarNuevaContraseña", null, new { @class = "form-control", placeholder = "Confirmar Nueva Contraseña" })
-        </div>
-    </div>
-
-    <div class="form-group" style="margin-top: 20px;">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Recuperar Contraseña" class="btn btn-default" />
-        </div>
-    </div>
-}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

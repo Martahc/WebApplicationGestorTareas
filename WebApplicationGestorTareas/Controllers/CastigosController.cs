@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using System.Net;
 using System.Web.Mvc;
+using WebApplicationGestorTareas.Models;
 
 namespace WebApplicationGestorTareas.Controllers
 {
@@ -14,35 +14,25 @@ namespace WebApplicationGestorTareas.Controllers
             return View(db.Castigo.ToList());
         }
 
+        public ActionResult CrearCastigo()
+        {
+            return View();
+        }
+
         // POST: Castigos/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Nombre,Descripcion,Plazo")] Castigo castigo)
+        public ActionResult CrearCastigo([Bind(Include = "Id,Nombre,Descripcion,Duracion")] CastigoDto CastigoDto)
         {
+            Castigo castigo = CastigoDto.CopyFromDto();
             if (ModelState.IsValid)
             {
                 db.Castigo.Add(castigo);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("VerMiPerfil", "Usuarios");
             }
-
-            return View(castigo);
+            return View(CastigoDto);
         }
-
-        // GET: Castigos/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Castigo castigo = db.Castigo.Find(id);
-            if (castigo == null)
-            {
-                return HttpNotFound();
-            }
-            return View(castigo);
-        }     
 
         protected override void Dispose(bool disposing)
         {
@@ -52,5 +42,6 @@ namespace WebApplicationGestorTareas.Controllers
             }
             base.Dispose(disposing);
         }
+
     }
 }

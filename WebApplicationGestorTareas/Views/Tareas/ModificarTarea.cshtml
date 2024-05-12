@@ -1,92 +1,102 @@
-﻿@model WebApplicationGestorTareas.Tarea
+﻿@model WebApplicationGestorTareas.Models.TareaDto
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Create";
 }
 
-<h2>Modificar tarea</h2>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
+</head>
+<body style="background-color: #fff3b8;">
+    <div class="container mt-4">
+        <h2 class="text-center">Modificar Tarea <i class="fa-regular fa-pen-to-square"></i></h2>
+        <hr />
+
+        <form method="post" action="@Url.Action("ModificarTarea", "Tareas")">
+
+            @Html.AntiForgeryToken()
+
+            <div class="card">
+                <div class="card-body">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="row mb-3">
+                        <label for="Nombre" class="col-md-2 col-form-label font-weight-bold">Nombre</label>
+                        <div class="col-md-10">
+                            <input type="text" id="Nombre" name="Nombre" value="@Model.Nombre" class="form-control" required="required" maxlength="100"
+                                   title="El nombre de la tarea es obligatorio (máximo 100 caracteres)." />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label for="Plazo" class="col-md-2 col-form-label font-weight-bold">Plazo</label>
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                <input type="number" id="Plazo" name="Plazo" value="@Model.Plazo" class="form-control" required="required" min="1" max="30"
+                                       title="El plazo debe ser un número positivo." />
+                                <span class="input-group-text">días</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label for="Puntos" class="col-md-2 col-form-label font-weight-bold">Puntos</label>
+                        <div class="col-md-10">
+                            <input type="number" id="Puntos" name="Puntos" value="@Model.Puntos" class="form-control" min="1" max="100"
+                                   title="Los puntos deben ser un número positivo." />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label for="NivelDificultad" class="col-md-2 col-form-label font-weight-bold">Nivel de Dificultad</label>
+                        <div class="col-md-10">
+                            <select class="form-select" id="NivelDificultad" name="NivelDificultad" required>
+                                <option value="" disabled selected>Seleccione un nivel de dificultad</option>
+                                @foreach (var opcion in new[] { "Fácil", "Intermedio", "Difícil" })
+                                {
+                                    <option value="@opcion" @(Model.NivelDificultad == opcion ? "selected" : "")>@opcion</option>
+                                }
+                            </select>
+                            <div class="invalid-feedback">
+                                Por favor, seleccione un nivel de dificultad.
+                            </div>
+                        </div>
+                    </div>
 
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-    
-<div class="form-horizontal">
-    <h4>Tarea</h4>
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    @Html.HiddenFor(model => model.Id)
+                    <div class="row mb-3">
+                        <label for="Castigo_Id" class="col-md-2 col-form-label font-weight-bold">Castigo</label>
+                        <div class="col-md-10">
+                            <select class="form-select" id="Castigo_Id" name="Castigo_Id" required title=" Por favor, seleccione un castigo.">
+                                <option value="@Model.Castigo_Id" selected></option>
+                                @foreach (var castigo in ViewBag.Castigos)
+                                {
+                                    <option value="@castigo.Id" @(Model.Castigo_Id == castigo.Id ? "selected" : "")>@castigo.Nombre</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Nombre, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Plazo, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            <div class="input-group">
-                @Html.EditorFor(model => model.Plazo, new { htmlAttributes = new { @class = "form-control" } })
-                <span class="input-group-addon" style="margin-left: 15px; margin-top: 10px;">días</span>
+                    <div class="form-group text-center">
+                            <button type="submit" class="btn btn-info">Modificar</button>
+                            @Html.ActionLink("Cancelar", "ObtenerTareas", null, new { @class = "btn btn-secondary" })
+                    </div>
+                </div>
             </div>
-            @Html.ValidationMessageFor(model => model.Plazo, "", new { @class = "text-danger" })
-        </div>
+        </form>
     </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Puntos, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Puntos, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Puntos, "", new { @class = "text-danger" })
-        </div>
-    </div>
+   
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.NivelDificultad, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownListFor(model => model.NivelDificultad, new SelectList(new[] { "Fácil", "Intermedio", "Difícil" }), "Seleccione una opción", new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.NivelDificultad, "", new { @class = "text-danger" })
-        </div>
-    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Estado, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Estado, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Estado, "", new { @class = "text-danger" })
-        </div>
-    </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.FechaInicio, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.FechaInicio, new { htmlAttributes = new { @class = "form-control", type = "date" } })
-            @Html.ValidationMessageFor(model => model.FechaInicio, "", new { @class = "text-danger" })
-        </div>
-    </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.FechaFin, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.FechaFin, new { htmlAttributes = new { @class = "form-control", type = "date" } })
-            @Html.ValidationMessageFor(model => model.FechaFin, "", new { @class = "text-danger" })
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Modificar tarea" class="btn btn-default" />
-        </div>
-    </div>
-</div>
-}
-
-<div>
-    @Html.ActionLink("Back to List", "ObtenerTareas")
-</div>
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}

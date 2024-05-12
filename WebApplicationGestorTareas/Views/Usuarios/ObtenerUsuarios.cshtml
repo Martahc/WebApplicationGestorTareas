@@ -6,9 +6,6 @@
 
 <h2>Perfiles</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
 <table class="table">
     <tr>
         <th>
@@ -16,18 +13,6 @@
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Nombre)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Rol)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Email)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Telefono)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Puntos)
         </th>
         <th></th>
     </tr>
@@ -41,19 +26,8 @@
             @Html.DisplayFor(modelItem => item.Nombre)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Rol.Nombre)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Email)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Telefono)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Puntos)
-        </td>
-        <td>
             @Html.ActionLink("Detalles", "Detalles", new { id = item.Id })
+            @Html.ActionLink("Eliminar", "EliminarPerfil", new { idUsuario = item.Id })
         </td>
     </tr>
 }

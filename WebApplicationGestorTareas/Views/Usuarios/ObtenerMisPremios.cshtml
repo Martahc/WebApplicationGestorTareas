@@ -1,0 +1,49 @@
+﻿@model PagedList.IPagedList<WebApplicationGestorTareas.Premio>
+
+@using PagedList.Mvc;
+
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
+
+
+</head>
+<body style="background-color: #ffb983;">
+    <div class="container mt-5">
+        <div class="premios-profile" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2>Premios <i class="fa-solid fa-trophy"></i></h2>
+            <a href="@Url.Action("VerMiPerfil", "Usuarios")" class="btn btn-dark">Volver a mi perfil <i class="fas fa-arrow-right ml-2"></i></a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Nombre</td>
+                            <td>@item.Descripcion</td>
+                            <td>@item.Puntos puntos</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @Html.PagedListPager(Model, page => Url.Action("ObtenerMisPremios",
+                new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, page = page }))
+        </div>
+    </div>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

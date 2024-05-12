@@ -1,0 +1,49 @@
+﻿@model WebApplicationGestorTareas.Castigo
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
+</head>
+
+<body style="background-color: #f1c3c3; padding-top: 20px;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card mt-5 border-danger">
+                    <div class="card-body">
+                        <h4 class="card-title text-danger">¿Estás seguro de que quieres eliminar este castigo? <i class="fa-solid fa-trash fa-beat-fade fa-xs" style="color: #d81313;"></i></h4>
+                        <hr>
+                        <dl class="row">
+                            <dt class="col-sm-4 text-muted">Castigo:</dt>
+                            <dd class="col-sm-8">@Model.Nombre</dd>
+                            <dt class="col-sm-4 text-muted">Descripcion:</dt>
+                            <dd class="col-sm-8">@Model.Descripcion</dd>
+                        </dl>
+
+                        <form asp-action="EliminarCastigo" method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <div class="text-center mt-4">
+                                <input type="submit" value="Eliminar" class="btn btn-danger mr-3" />
+                                <a href="@Url.Action("ObtenerCastigos", new { id = ViewBag.idUsuario })" class="btn btn-secondary">Cancelar</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
