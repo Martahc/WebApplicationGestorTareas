@@ -1,31 +1,57 @@
-﻿@model IEnumerable<WebApplicationGestorTareas.Premio>
+﻿@model PagedList.IPagedList<WebApplicationGestorTareas.Premio>
+
+@using PagedList.Mvc;
+
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Premios</h2>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Nombre)
-        </th>
-  
-        <th></th>
-    </tr>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
 
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-           
-            <td>
-                @Html.ActionLink("Detalles", "ObtenerPremio", new { idUsuario = ViewBag.idUsuario, idPremio = item.Id })
-            </td>
-        </tr>
-    }
+</head>
 
-</table>
+<body style="background-color: #ffb983;">
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-left">Premios <i class="fa-solid fa-trophy"></i></h2>
+            <a href="@Url.Action("Detalles", new { id = ViewBag.idUsuario})" class="btn btn-dark">
+                Volver al perfil
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <table class="table table-bordered table-striped">
+
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Nombre</td>
+                        <td class="text-center">
+                            <a href="@Url.Action("ObtenerPremio", new { idUsuario = ViewBag.idUsuario, idPremio = item.Id })" class="btn btn-outline-dark btn-sm">Detalles</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+        @Html.PagedListPager(Model, page => Url.Action("ObtenerPremios",
+            new { id = ViewBag.idUsuario, page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+
+      
+    </div>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
