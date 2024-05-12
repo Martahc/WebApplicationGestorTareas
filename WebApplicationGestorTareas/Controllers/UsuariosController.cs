@@ -33,7 +33,7 @@ namespace WebApplicationGestorTareas.Controllers
                 using (GestorTareasEntities db = new GestorTareasEntities())
                 {
                     var obj = db.Usuario
-                                .Include(u => u.Rol) 
+                                .Include(u => u.Rol)
                                 .FirstOrDefault(a => a.Nombre == objUser.Nombre && a.Contraseña == objUser.Contraseña);
 
 
@@ -42,16 +42,18 @@ namespace WebApplicationGestorTareas.Controllers
                         Session["UserID"] = obj.Id.ToString();
                         Session["UserName"] = obj.Nombre.ToString();
                         Session["UserRol"] = obj.Rol.Nombre;
+                      
+
                         return RedirectToAction("VerMiPerfil");
                     }
                     else
                     {
-                        ModelState.AddModelError("", "Usuario y/o contraseña incorrectos"); 
+                        ModelState.AddModelError("", "Usuario y/o contraseña incorrectos");
                     }
                 }
             }
 
-            return View(objUser); 
+            return View(objUser);
         }
 
 
@@ -64,7 +66,7 @@ namespace WebApplicationGestorTareas.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Registro([Bind(Include = "Id,Nombre,Email,Contraseña,Telefono,Imagen,Rol_Id")] UsuarioDto usuarioDto)
+        public ActionResult Registro([Bind(Include = "Id,Nombre,Email,Contraseña,Telefono,Imagen,Rol_Id")] UsuarioDto usuarioDto, HttpPostedFileBase ArchivoImagen)
         {
             var existingUser = db.Usuario.FirstOrDefault(a => a.Nombre == usuarioDto.Nombre);
             if (existingUser == null)
@@ -72,12 +74,26 @@ namespace WebApplicationGestorTareas.Controllers
                 Usuario usuario = usuarioDto.CopyFromDto();
                 if (ModelState.IsValid)
                 {
+                    if (ArchivoImagen != null && ArchivoImagen.ContentLength > 0)
+                    {
+                        var fileName = Path.GetFileName(ArchivoImagen.FileName);
+                        var path = Path.Combine(Server.MapPath("~/Content/"), fileName);
+                        ArchivoImagen.SaveAs(path);
+
+                        usuario.Imagen = fileName;
+                    }
+
                     usuario.Rol = db.Rol.Find(usuario.Rol_Id);
                     db.Usuario.Add(usuario);
                     db.SaveChanges();
                     Session["UserID"] = usuario.Id.ToString();
                     Session["UserName"] = usuario.Nombre.ToString();
                     Session["UserRol"] = usuario.Rol.Nombre;
+
+                    Response.Cookies["CastigosCount"].Value = "0";
+                    Response.Cookies["PremiosCount"].Value = "0";
+                    Response.Cookies["TareasCount"].Value = "0";
+
                     return RedirectToAction("VerMiPerfil");
                 }
             }
@@ -115,12 +131,12 @@ namespace WebApplicationGestorTareas.Controllers
                 var usuario = db.Usuario.FirstOrDefault(u => u.Nombre.Equals(UsuarioCorreo) || u.Email.Equals(UsuarioCorreo));
 
                 if (usuario != null)
-                {                 
+                {
                     usuario.Contraseña = NuevaContraseña;
                     db.Entry(usuario).State = EntityState.Modified;
                     db.SaveChanges();
 
-                    return RedirectToAction("Login");                  
+                    return RedirectToAction("Login");
                 }
                 else
                 {
@@ -275,10 +291,11 @@ namespace WebApplicationGestorTareas.Controllers
 
         }
 
+        // GET: ver mi perfil --> ver mis puntos
         public ActionResult VerMiPerfil()
         {
             int id = int.Parse(Session["UserID"].ToString());
-            if (id == null)
+            if (id == 0)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
@@ -289,6 +306,7 @@ namespace WebApplicationGestorTareas.Controllers
             }
             return View(usuario);
         }
+
 
         #region imagen
         public ActionResult GetImage(string imageName)
