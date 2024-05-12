@@ -42,7 +42,7 @@ namespace WebApplicationGestorTareas.Controllers
                         Session["UserID"] = obj.Id.ToString();
                         Session["UserName"] = obj.Nombre.ToString();
                         Session["UserRol"] = obj.Rol.Nombre;
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("VerMiPerfil");
                     }
                     else
                     {
@@ -78,7 +78,7 @@ namespace WebApplicationGestorTareas.Controllers
                     Session["UserID"] = usuario.Id.ToString();
                     Session["UserName"] = usuario.Nombre.ToString();
                     Session["UserRol"] = usuario.Rol.Nombre;
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("VerMiPerfil");
                 }
             }
             else
