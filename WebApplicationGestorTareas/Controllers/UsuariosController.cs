@@ -42,7 +42,8 @@ namespace WebApplicationGestorTareas.Controllers
                         Session["UserID"] = obj.Id.ToString();
                         Session["UserName"] = obj.Nombre.ToString();
                         Session["UserRol"] = obj.Rol.Nombre;
-                      
+
+                     
 
                         return RedirectToAction("VerMiPerfil");
                     }
@@ -89,10 +90,6 @@ namespace WebApplicationGestorTareas.Controllers
                     Session["UserID"] = usuario.Id.ToString();
                     Session["UserName"] = usuario.Nombre.ToString();
                     Session["UserRol"] = usuario.Rol.Nombre;
-
-                    Response.Cookies["CastigosCount"].Value = "0";
-                    Response.Cookies["PremiosCount"].Value = "0";
-                    Response.Cookies["TareasCount"].Value = "0";
 
                     return RedirectToAction("VerMiPerfil");
                 }
@@ -253,47 +250,17 @@ namespace WebApplicationGestorTareas.Controllers
                 return HttpNotFound();
             }
 
-            var tareasActuales = usuario.Tarea;
-            int tareasAnteriores = int.Parse(Request.Cookies["TareasCount"]?.Value ?? "0");
+            var tareasAsignadas = usuario.Tarea;
+            int tareasEnCurso = 0;
+            if (usuario.Num_Tareas_EnCurso.HasValue)
+            {
+                tareasEnCurso = usuario.Num_Tareas_EnCurso.Value;
+            }
 
-            if (tareasActuales.Count > tareasAnteriores)
+            if (tareasAsignadas.Count > tareasEnCurso)
             {
                 TempData["NotificationTareas"] = "Tienes nuevas tareas asignadas.";
-            }
-
-            var premiosActuales = usuario.Premio;
-            int premiosAnteriores = int.Parse(Request.Cookies["PremiosCount"]?.Value ?? "0");
-
-            if (premiosActuales.Count == premiosAnteriores - 1)
-            {
-                TempData["NotificationPremios"] = "Te han eliminado un premio.";
-            }
-            else if (premiosActuales.Count < premiosAnteriores)
-            {
-                TempData["NotificationPremios"] = "Te han eliminado unos premios.";
-            }
-
-            var castigosActuales = usuario.Castigo;
-            int castigosAnteriores = int.Parse(Request.Cookies["CastigosCount"]?.Value ?? "0");
-
-            if (castigosActuales.Count == castigosAnteriores - 1)
-            {
-                TempData["NotificationCastigos"] = "Te han eliminado un castigo.";
-            }
-            else if (castigosActuales.Count < castigosAnteriores)
-            {
-                TempData["NotificationCastigos"] = "Te han eliminado unos castigos.";
-            }
-
-            Response.Cookies["UserID"].Value = id.ToString();
-            Response.Cookies["CastigosCount"].Value = castigosActuales.Count.ToString();
-            Response.Cookies["PremiosCount"].Value = premiosActuales.Count.ToString();
-            Response.Cookies["TareasCount"].Value = tareasActuales.Count.ToString();
-
-            Response.Cookies["UserID"].Expires = DateTime.Now.AddHours(1);
-            Response.Cookies["CastigosCount"].Expires = DateTime.Now.AddHours(1);
-            Response.Cookies["PremiosCount"].Expires = DateTime.Now.AddHours(1);
-            Response.Cookies["TareasCount"].Expires = DateTime.Now.AddHours(1);
+            }          
 
             return View(usuario);
         }
@@ -625,6 +592,18 @@ namespace WebApplicationGestorTareas.Controllers
 
             if (tarea.Estado == "Asignada")
             {
+                Usuario usuario = db.Usuario.Find(tarea.Usuario_Id);
+                if (usuario.Num_Tareas_EnCurso.HasValue)
+                {
+                    usuario.Num_Tareas_EnCurso = usuario.Num_Tareas_EnCurso + 1;
+                }
+                else
+                {
+                    usuario.Num_Tareas_EnCurso =  1;
+                }
+                
+                db.Entry(usuario).State = EntityState.Modified;
+
                 tarea.Estado = "En progreso";
                 db.Entry(tarea).State = EntityState.Modified;
                 db.SaveChanges();

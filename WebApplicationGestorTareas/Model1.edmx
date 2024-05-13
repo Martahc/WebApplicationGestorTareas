@@ -57,6 +57,7 @@
           <Property Name="Puntos" Type="int" />
           <Property Name="Imagen" Type="varchar" MaxLength="255" />
           <Property Name="Rol_Id" Type="int" Nullable="false" />
+          <Property Name="Num_Tareas_EnCurso" Type="int" />
         </EntityType>
         <EntityType Name="Usuario_Castigo">
           <Key>
@@ -261,6 +262,7 @@
           <NavigationProperty Name="Tarea" Relationship="Self.FK__Tarea__usuario_i__52593CB8" FromRole="Usuario" ToRole="Tarea" />
           <NavigationProperty Name="Castigo" Relationship="Self.Usuario_Castigo" FromRole="Usuario" ToRole="Castigo" />
           <NavigationProperty Name="Premio" Relationship="Self.Usuario_Premio" FromRole="Usuario" ToRole="Premio" />
+          <Property Name="Num_Tareas_EnCurso" Type="Int32" Nullable="true" />
         </EntityType>
         <Association Name="FK__Tarea__castigo_i__534D60F1">
           <End Role="Castigo" Type="Self.Castigo" Multiplicity="1" />
@@ -386,6 +388,7 @@
           <EntitySetMapping Name="Usuario">
             <EntityTypeMapping TypeName="GestorTareasModel.Usuario">
               <MappingFragment StoreEntitySet="Usuario">
+                <ScalarProperty Name="Num_Tareas_EnCurso" ColumnName="Num_Tareas_EnCurso" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Nombre" ColumnName="Nombre" />
                 <ScalarProperty Name="Email" ColumnName="Email" />

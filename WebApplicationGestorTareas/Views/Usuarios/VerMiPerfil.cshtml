@@ -62,8 +62,7 @@
 
 <div class="profile-container" style=" background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; text-align: center;">
     <div id="alertPlaceholder" style="position: fixed; top: 20px; right: 20px; z-index: 1000; max-width: 100px;"></div>
-    <div id="alertPlaceholder2" style="position: fixed; top: 20px; right: 20px; z-index: 1000; max-width: 100px;"></div>
-    <div id="alertPlaceholder3" style="position: fixed; top: 20px; right: 20px; z-index: 1000; max-width: 100px;"></div>
+  
 
     <div class="profile-picture" style=" position: relative; text-align: center; margin-bottom: 20px; background-color: #fca8b8; padding: 10px; border-radius: 8px;">
         <img src="@Url.Action("GetImage", "Usuarios", new { imageName = @Html.DisplayFor(model => model.Imagen) })" alt="Imagen del usuario" style=" width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
@@ -122,38 +121,5 @@
     </script>
 }
 
-@if (TempData["NotificationPremios"] != null)
-{
-    <script type="text/javascript">
-    $(document).ready(function() {
-        var successMessage = '@Html.Raw(TempData["NotificationPremios"])';
-        var alertPlaceholder2 = document.getElementById('alertPlaceholder2') || document.body;
-        var wrapper = document.createElement('div');
-        wrapper.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
-                                ${successMessage}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>`;
-        alertPlaceholder2.append(wrapper);
-    });
-    </script>
-}
 
-@if (TempData["NotificationCastigos"] != null)
-{
-    <script type="text/javascript">
-    $(document).ready(function() {
-        var successMessage = '@Html.Raw(TempData["NotificationCastigos"])';
-        var alertPlaceholder3 = document.getElementById('alertPlaceholder3') || document.body;
-        var wrapper = document.createElement('div');
-        wrapper.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
-                                ${successMessage}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>`;
-        alertPlaceholder3.append(wrapper);
-    });
-    </script>
 }

@@ -253,7 +253,6 @@ namespace WebApplicationGestorTareas.Controllers
                 tarea.FechaInicio = tareaAsignar.FechaInicio;
 
                 Usuario usuario = db.Usuario.Find(tarea.Usuario_Id);
-
                 usuario.Tarea.Add(tarea);
 
                 db.Entry(tarea).State = EntityState.Modified;
