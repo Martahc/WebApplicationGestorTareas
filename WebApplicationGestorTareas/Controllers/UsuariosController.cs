@@ -641,7 +641,7 @@ namespace WebApplicationGestorTareas.Controllers
                 castigo.Usuario.Add(usuario);
                 db.Entry(castigo).State = EntityState.Modified;
 
-                TempData["SuccessMessage"] = "Tarea fallida. Recibes un castigo";
+                TempData["ErrorMessage"] = "Tarea fallida. Recibes un castigo";
 
             }
             else
@@ -672,6 +672,9 @@ namespace WebApplicationGestorTareas.Controllers
 
                 }
             }
+
+            usuario.Num_Tareas_EnCurso = usuario.Num_Tareas_EnCurso - 1;
+            usuario.Tarea.Remove(tarea);
 
             db.Entry(tarea).State = EntityState.Modified;
             db.Entry(usuario).State = EntityState.Modified;
