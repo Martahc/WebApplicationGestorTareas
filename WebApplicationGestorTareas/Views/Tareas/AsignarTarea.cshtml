@@ -4,39 +4,53 @@
     ViewBag.Title = "AsignarTarea";
 }
 
-<h2>Tarea @Html.DisplayNameFor(model => model.Nombre) </h2>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Asignar tarea</title>
 
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
+</head>
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
+<body style=" background-color: #c1e1ff;">
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form method="post" class="card">
+                    @Html.AntiForgeryToken()
 
-<div class="form-horizontal">
-    <h4>Tarea @Html.DisplayNameFor(model => model.Nombre) </h4>
-    <hr />
-    <div class="form-group">
-        @Html.LabelFor(model => model.Usuario_Id, "Usuario", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownList("Usuario_Id", null, htmlAttributes: new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.Usuario_Id, "", new { @class = "text-danger" })
+                    <div class="card-body" style="background-color: #c0c0c0;">
+                        <h4>Tarea: @Html.DisplayFor(model => model.Nombre)</h4>
+                        <hr />
+
+                        <div class="form-group row mb-3">
+                            <label for="Usuario" class="col-md-4 col-form-label">Usuario <i class="fa-regular fa-user"></i></label>
+                            <div class="col-md-8">
+                                @Html.DropDownList("Usuario_Id", null, "Seleccione un usuario...", new { @class = "form-control" })
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-3">
+                            <label for="FechaInicio" class="col-md-4 col-form-label">Fecha de Inicio <i class="fa-solid fa-calendar-day"></i></label>
+                            <div class="col-md-8">
+                                <input type="date" id="FechaInicio" name="FechaInicio" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-3">
+                            <div class="col-md-12 text-center">
+                                <button type="submit" class="btn btn-outline-dark">Asignar</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.FechaInicio, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.FechaInicio, new { htmlAttributes = new { @class = "form-control", type = "date" } })
-            @Html.ValidationMessageFor(model => model.FechaInicio, "", new { @class = "text-danger" })
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Asignar tarea" class="btn btn-default" />
-        </div>
-    </div>
-</div>
-}
 
+    <div class="container mt-3 text-center">
+        <a href="@Url.Action("ObtenerTareas")" class="btn" style="background-color: #c0c0c0; color: #000;">Volver al Listado</a>
+    </div>
+</body>
 
-<div>
-    @Html.ActionLink("Back to List", "ObtenerTareas")
-</div>

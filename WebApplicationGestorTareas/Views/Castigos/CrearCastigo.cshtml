@@ -5,6 +5,7 @@
 }
 
 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -17,9 +18,9 @@
 
 <body style="background-color: #f0616b;">
     <div class="container mt-5">
-        <div class="row">
+        <div class="row justify-content-center">
             <div class="col-md-6">
-                <h2 class="text-left">Crear castigo <i class="fas fa-handcuffs fa-bounce"></i></h2>
+                <h2 class="text-center">Crear castigo <i class="fas fa-handcuffs fa-bounce"></i></h2>
                 <hr />
 
                 <form asp-action="CrearCastigo" method="post">
@@ -38,30 +39,27 @@
                                 <input type="text" id="Descripcion" name="Descripcion" class="form-control" maxlength="200" title="La descripción del castigo no puede exceder los 200 caracteres.">
                             </div>
 
-
                             <div class="mb-3">
                                 <label for="Duracion" class="form-label">Duración del castigo</label>
                                 <div class="input-group">
-                                    <input type="number" id="Duracion" name="Duracion" class="form-control" required="required" min="1" max="30" title=" La duración debe ser un número positivo.">
+                                    <input type="number" id="Duracion" name="Duracion" class="form-control" required="required" min="1" max="30" title="La duración debe ser un número positivo.">
                                     <span class="input-group-text">días</span>
                                 </div>
-                                </div>
-
-
-                                <div class="form-group">
-                                    <button type="submit" class="btn btn-light" style="border-color:black;">
-                                        Crear
-                                    </button>
-                                </div>
                             </div>
+
+                            <div class="form-group text-center">
+                                <button type="submit" class="btn btn-light" style="border-color:black;">
+                                    Crear
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>
 
-    <div class="container mt-3">
+    <div class="container mt-3 text-center">
         <a href="@Url.Action("VerMiPerfil","Usuarios")" class="btn btn-secondary" style="padding:4px 15px">
             <i class="fas fa-arrow-left"></i>
         </a>

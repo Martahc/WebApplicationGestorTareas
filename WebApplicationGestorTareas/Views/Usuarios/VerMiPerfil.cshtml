@@ -4,65 +4,119 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Mi perfil</h2>
+<style>
+    body {
+        background-color: #f9dfe5;
+    }
 
-<div>
-    <h4>Usuario</h4>
+    .edit-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #fff;
+        color: #e91e63;
+        border: none;
+        cursor: pointer;
+    }
+
+        .edit-button:hover {
+            background-color: #f1f1f1;
+        }
+
+    dl.details-list dt,
+    dl.details-list dd {
+        flex: 0 0 50%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .button-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+        .button-container a {
+            background-color: #e91e63;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+            .button-container a:hover {
+                background-color: #c2185b;
+            }
+</style>
+
+<link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+
+
+<div class="profile-container" style=" background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; text-align: center;">
+    <div id="alertPlaceholder" style="position: fixed; top: 20px; right: 20px; z-index: 1000; max-width: 100px;"></div>
+
+
+    <div class="profile-picture" style=" position: relative; text-align: center; margin-bottom: 20px; background-color: #fca8b8; padding: 10px; border-radius: 8px;">
+        <img src="@Url.Action("GetImage", "Usuarios", new { imageName = @Html.DisplayFor(model => model.Imagen) })" alt="Imagen del usuario" style=" width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
+        <button onclick="location.href='@Url.Action("EditarPerfil", new { id = Model.Id })'" class="edit-button">
+            <i class="fas fa-edit"></i> Editar perfil
+        </button>
+    </div>
+
+    <h4 style="color: #fca8b8; margin-top: 10px; margin-bottom: 0; padding: 0px 500px; text-align: center;">
+        @Html.DisplayFor(model => model.Nombre)
+    </h4>
+
     <hr />
-    <dl class="dl-horizontal">
 
-        <div class="details-item">
-            <dt class="details-label">
-                @Html.DisplayNameFor(model => model.Imagen)
-            </dt>
-            <dd>
-                <img src="@Url.Action("GetImage", "Usuarios", new { imageName =  @Html.DisplayFor(model => model.Imagen) })" alt="Imagen del producto" />
-            </dd>
-        </div>
+    <dl class="dl-horizontal details-list" style=" display: flex; flex-wrap: wrap;">
+        <dt class="details-label" style=" font-weight: bold;">@Html.DisplayNameFor(model => model.Rol):</dt>
+        <dd>@Html.DisplayFor(model => model.Rol.Nombre)</dd>
 
+        <dt class="details-label">@Html.DisplayNameFor(model => model.Email):</dt>
+        <dd>@Html.DisplayFor(model => model.Email)</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
+        <dt class="details-label">@Html.DisplayNameFor(model => model.Telefono):</dt>
+        <dd>@Html.DisplayFor(model => model.Telefono)</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Rol)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Rol.Nombre)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Telefono)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Telefono)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Puntos)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Puntos)
-        </dd>
-
+        <dt class="details-label">@Html.DisplayNameFor(model => model.Puntos):</dt>
+        <dd>@Html.DisplayFor(model => model.Puntos)</dd>
     </dl>
+
+
 </div>
-<p>
-    @Html.ActionLink("Ver mis castigos", "ObtenerMisCastigos") |
-    @Html.ActionLink("Ver mis premios", "ObtenerMisPremios") |
-    @Html.ActionLink("Editar perfil", "EditarPerfil", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "ObtenerUsuarios")
-</p>
+<div class="button-container">
+
+    <a href="@Url.Action("ObtenerMisCastigos", new { id = Model.Id })" class="btn btn-success">
+        <i class="fas fa-gavel"></i> Mis castigos
+    </a>
+    <a href="@Url.Action("ObtenerMisPremios", new { id = Model.Id })" class="btn btn-info">
+        <i class="fas fa-award"></i> Mis premios
+    </a>
+</div>
+
+@if (TempData["NotificationTareas"] != null)
+{
+    <script type="text/javascript">
+    $(document).ready(function() {
+        var successMessage = '@Html.Raw(TempData["NotificationTareas"])';
+        var alertPlaceholder = document.getElementById('alertPlaceholder') || document.body;
+        var wrapper = document.createElement('div');
+        wrapper.innerHTML = `<div class="alert alert-warning alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+                                ${successMessage}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>`;
+        alertPlaceholder.append(wrapper);
+    });
+    </script>
+}

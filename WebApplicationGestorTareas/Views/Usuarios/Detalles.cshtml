@@ -4,63 +4,75 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Mi perfil</h2>
+<style>
+    body {
+        background-color: #8cba99;
+    }
 
-<div>
-    <h4>Usuario</h4>
+    dl.details-list dt,
+    dl.details-list dd {
+        flex: 0 0 50%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+        .button-container a {
+            display: inline-block;
+            background-color: #8cba99;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+            .button-container a:hover {
+                background-color: #6b9176;
+            }
+</style>
+
+<link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
+
+<div class="profile-container" style=" background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; text-align: center;">
+    <div class="profile-picture" style="text-align: center; margin-bottom: 20px; background-color: #b3e2c0; padding: 10px; border-radius: 8px;">
+        <img src="@Url.Action("GetImage", "Usuarios", new { imageName = @Html.DisplayFor(model => model.Imagen) })" alt="Imagen del usuario" style=" width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
+    </div>
+
+    <h4 style="color: #b3e2c0; margin-top: 10px; margin-bottom: 0; padding: 0px 500px; text-align: center;">
+        @Html.DisplayFor(model => model.Nombre)
+    </h4>
+
     <hr />
-    <dl class="dl-horizontal">
 
-        <div class="details-item">
-            <dt class="details-label">
-                @Html.DisplayNameFor(model => model.Imagen)
-            </dt>
-            <dd>
-                <img src="@Url.Action("GetImage", "Usuarios", new { imageName =  @Html.DisplayFor(model => model.Imagen) })" alt="Imagen del usuario" />
-            </dd>
-        </div>
+    <dl class="dl-horizontal details-list" style=" display: flex; flex-wrap: wrap;">
+        <dt class="details-label" style=" font-weight: bold;">@Html.DisplayNameFor(model => model.Rol):</dt>
+        <dd>@Html.DisplayFor(model => model.Rol.Nombre)</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
+        <dt class="details-label">@Html.DisplayNameFor(model => model.Email):</dt>
+        <dd>@Html.DisplayFor(model => model.Email)</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Rol)
-        </dt>
+        <dt class="details-label">@Html.DisplayNameFor(model => model.Telefono):</dt>
+        <dd>@Html.DisplayFor(model => model.Telefono)</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Rol.Nombre)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Telefono)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Telefono)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Puntos)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Puntos)
-        </dd>
-
+        <dt class="details-label">@Html.DisplayNameFor(model => model.Puntos):</dt>
+        <dd>@Html.DisplayFor(model => model.Puntos)</dd>
     </dl>
+
+    <a href="@Url.Action("ObtenerCastigos", new { id = Model.Id })" class="btn btn-success">
+        <i class="fas fa-gavel"></i> Castigos
+    </a>
+    <a href="@Url.Action("ObtenerPremios", new { id = Model.Id })" class="btn btn-success">
+        <i class="fas fa-award"></i> Premios
+    </a>
+
 </div>
-<p>
-    @Html.ActionLink("Ver castigos", "ObtenerCastigos", new { id = Model.Id }) |
-    @Html.ActionLink("Ver premios", "ObtenerPremios", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "ObtenerUsuarios")
-</p>
+<a href="@Url.Action("ObtenerUsuarios")" class="btn btn-dark">
+    <i class="fa-solid fa-arrow-left"></i> Volver a los perfiles
+</a>

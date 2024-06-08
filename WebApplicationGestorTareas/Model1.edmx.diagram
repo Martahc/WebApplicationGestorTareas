@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="7aaef3e5a84e42fb9e3e187f3ff9099b" Name="Diagram1">
+      <Diagram DiagramId="7aaef3e5a84e42fb9e3e187f3ff9099b" Name="Diagram1" ZoomLevel="86">
         <EntityTypeShape EntityType="GestorTareasModel.Castigo" Width="1.5" PointX="0.75" PointY="4.875" IsExpanded="true" />
         <EntityTypeShape EntityType="GestorTareasModel.Premio" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="GestorTareasModel.Rol" Width="1.5" PointX="3.75" PointY="8.5" IsExpanded="true" />
