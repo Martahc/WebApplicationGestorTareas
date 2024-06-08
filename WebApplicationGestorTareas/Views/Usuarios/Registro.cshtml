@@ -1,78 +1,80 @@
-﻿@model WebApplicationGestorTareas.Models.UsuarioDto
+﻿
+@{
+    Layout = null;
+}
+
+@model WebApplicationGestorTareas.Models.UsuarioDto
 
 @{
-    ViewBag.Title = "Registro";
+    ViewBag.Title = "Registrarse";
 }
 
-<h2>Registro</h2>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.2/css/all.css">
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
+</head>
+<body style="background-image: url('https://static.vecteezy.com/system/resources/previews/007/796/642/non_2x/gradient-background-with-dark-colors-free-vector.jpg'); 
+        background-size: cover; font-family: 'Arial', sans-serif; height: 100vh; display: flex; align-items: center; justify-content: center;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card" style=" background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); max-width: 600px; width: 100%; padding: 20px; margin: 20px;">
+                    <div class="card-body">
+                        <h2 class="text-center mb-4">Registro</h2>
+                        <form asp-action="Registro" method="post" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-<div class="form-horizontal">
-    <h4>Usuario</h4>
+                            <div class="form-group text-center">
+                                <label class="control-label"></label>
+                                @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control", placeholder = "Ingrese su nombre" } })
+                                @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+                            </div>
 
-    <hr />
+                            <div class="form-group text-center">
+                                <label class="control-label"></label>
+                                @Html.PasswordFor(model => model.Contraseña, new { @class = "form-control", placeholder = "Ingrese su contraseña" })
+                                @Html.ValidationMessageFor(model => model.Contraseña, "", new { @class = "text-danger" })
+                            </div>
 
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group text-center">
+                                <label class="control-label"></label>
+                                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "Ingrese su email" } })
+                                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                            </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Nombre, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+                            <div class="form-group text-center">
+                                <label class="control-label"></label>
+                                @Html.EditorFor(model => model.Telefono, new { htmlAttributes = new { @class = "form-control", placeholder = "Ingrese su teléfono" } })
+                                @Html.ValidationMessageFor(model => model.Telefono, "", new { @class = "text-danger" })
+                            </div>
+
+
+                            <div class="form-group text-center">
+                                <label class="control-label"></label>
+                                @Html.DropDownListFor(model => model.Rol_Id, new SelectList(new[]
+                                {
+                                    new { Value = 1, Text = "Administrador" },
+                                    new { Value = 2, Text = "Usuario" }
+                                }, "Value", "Text"), "Seleccione un Rol", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Rol_Id, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group text-center" style="margin-top:20px;">
+                                <label class="control-label"></label>
+                                <input type="file" name="ArchivoImagen" accept=".jpg, .jpeg, .png" />
+                            </div>
+
+                            <div class="form-group text-center">
+                                <button type="submit" class="btn btn-sunset" style=" background-color: #003366; border-color: #003366; color: #fff; margin-top:20px;">Registrarse</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Contraseña, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.PasswordFor(model => model.Contraseña, new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.Contraseña, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Telefono, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Telefono, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Telefono, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Rol_Id, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownListFor(model => model.Rol_Id, new SelectList(new[]
-            {
-                new { Value = 1, Text = "Administrador" },
-                new { Value = 2, Text = "Usuario" }
-            }, "Value", "Text"), "Seleccione un Rol", htmlAttributes: new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.Rol_Id, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-
-    <!-- Agrega más campos de acuerdo a tus necesidades -->
-
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Registrarse" class="btn btn-default" />
-        </div>
-    </div>
-</div>
-}
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
