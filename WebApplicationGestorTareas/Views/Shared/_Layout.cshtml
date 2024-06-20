@@ -20,7 +20,7 @@
             </button>
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                 <ul class="nav nav-tabs navbar-left" id="myTab" role="tablist">
-                   
+
                     @if (Session["UserID"] != null)
                     {
                         <li class="nav-item" role="presentation">
@@ -38,12 +38,17 @@
 
                         if (Session["UserRol"].ToString() == "Admin")
                         {
-                            <li class="nav-item" role="presentation">
-                                <button onclick="location.href='/Tareas/ObtenerTareas';" class="nav-link" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks-tab-pane" type="button" role="tab" aria-controls="tasks-tab-pane" aria-selected="false"
-                                        style="color: black">
-                                    <i class="fa-solid fa-list-check"></i> Tareas
-                                </button>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false" style="color: black"> <i class="fa-solid fa-list-check"></i> Tareas</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/Tareas/ObtenerTareas"><i class="fa-solid fa-list-check"></i>  Todas </a></li>
+                                    <li><a class="dropdown-item" href="/Tareas/ObtenerTareasNoAsignadas"> <i class="fa-solid fa-user-xmark"></i> No asignadas</a></li>
+                                    <li><a class="dropdown-item" href="/Tareas/ObtenerTareasAsignadas"> <i class="fa-solid fa-user-tag"></i> Asignadas</a></li>
+                                    <li><a class="dropdown-item" href="/Tareas/ObtenerTareasCompletadas"> <i class="fa-solid fa-user-check"></i> Completadas</a></li>
+                                </ul>
                             </li>
+
                             <li class="nav-item" role="presentation">
                                 <button onclick="location.href='/Usuarios/ObtenerUsuarios';" class="nav-link" id="profiles-tab" data-bs-toggle="tab" data-bs-target="#profiles-tab-pane" type="button" role="tab" aria-controls="profiles-tab-pane" aria-selected="false"
                                         style="color: black">
@@ -89,7 +94,7 @@
                     }
 
                 </ul>
-               
+
             </div>
         </div>
     </nav>
