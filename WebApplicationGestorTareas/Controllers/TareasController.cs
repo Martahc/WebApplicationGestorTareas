@@ -213,14 +213,6 @@ namespace WebApplicationGestorTareas.Controllers
             castigo.Tarea.Remove(tarea);
             db.Entry(castigo).State = EntityState.Modified;
 
-            if (tarea.Usuario_Id != null)
-            {
-                Usuario usuario = db.Usuario.Find(tarea.Usuario_Id);
-                usuario.Tarea.Remove(tarea);
-                db.Entry(usuario).State = EntityState.Modified;
-
-            }
-
             db.Tarea.Remove(tarea);
             db.SaveChanges();
             return RedirectToAction("ObtenerTareas");
@@ -253,7 +245,6 @@ namespace WebApplicationGestorTareas.Controllers
                 tarea.FechaInicio = tareaAsignar.FechaInicio;
 
                 Usuario usuario = db.Usuario.Find(tarea.Usuario_Id);
-
                 usuario.Tarea.Add(tarea);
 
                 db.Entry(tarea).State = EntityState.Modified;

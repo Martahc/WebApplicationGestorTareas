@@ -30,6 +30,7 @@ namespace WebApplicationGestorTareas
         public Nullable<int> Puntos { get; set; }
         public string Imagen { get; set; }
         public int Rol_Id { get; set; }
+        public Nullable<int> Num_Tareas_EnCurso { get; set; }
     
         public virtual Rol Rol { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

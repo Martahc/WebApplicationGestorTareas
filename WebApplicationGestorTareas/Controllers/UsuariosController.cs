@@ -42,7 +42,8 @@ namespace WebApplicationGestorTareas.Controllers
                         Session["UserID"] = obj.Id.ToString();
                         Session["UserName"] = obj.Nombre.ToString();
                         Session["UserRol"] = obj.Rol.Nombre;
-                      
+
+                     
 
                         return RedirectToAction("VerMiPerfil");
                     }
@@ -89,10 +90,6 @@ namespace WebApplicationGestorTareas.Controllers
                     Session["UserID"] = usuario.Id.ToString();
                     Session["UserName"] = usuario.Nombre.ToString();
                     Session["UserRol"] = usuario.Rol.Nombre;
-
-                    Response.Cookies["CastigosCount"].Value = "0";
-                    Response.Cookies["PremiosCount"].Value = "0";
-                    Response.Cookies["TareasCount"].Value = "0";
 
                     return RedirectToAction("VerMiPerfil");
                 }
@@ -153,9 +150,13 @@ namespace WebApplicationGestorTareas.Controllers
         #region usuario
 
         // GET: ver perfiles
-        public ActionResult ObtenerUsuarios()
+        public ActionResult ObtenerUsuarios(string sortOrder, string currentFilter, int? page)
         {
-            return View(db.Usuario.ToList());
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.CurrentFilter = currentFilter;
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            return View(db.Usuario.ToList().ToPagedList(pageNumber, pageSize));
         }
 
         // GET: ver detalles de un perfil --> ver puntos
@@ -235,6 +236,35 @@ namespace WebApplicationGestorTareas.Controllers
         }
 
 
+        // GET: ver mi perfil --> ver mis puntos
+        public ActionResult VerMiPerfil()
+        {
+            int id = int.Parse(Session["UserID"].ToString());
+            if (id == 0)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Usuario usuario = db.Usuario.Find(id);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+
+            var tareasAsignadas = usuario.Tarea;
+            int tareasEnCurso = 0;
+            if (usuario.Num_Tareas_EnCurso.HasValue)
+            {
+                tareasEnCurso = usuario.Num_Tareas_EnCurso.Value;
+            }
+
+            if (tareasAsignadas.Count > tareasEnCurso)
+            {
+                TempData["NotificationTareas"] = "Tienes nuevas tareas asignadas.";
+            }          
+
+            return View(usuario);
+        }
+
 
         // DELETE: Usuarios/5/Premios/5
         public ActionResult EliminarPerfil(int? idUsuario)
@@ -291,24 +321,8 @@ namespace WebApplicationGestorTareas.Controllers
 
         }
 
-        // GET: ver mi perfil --> ver mis puntos
-        public ActionResult VerMiPerfil()
-        {
-            int id = int.Parse(Session["UserID"].ToString());
-            if (id == 0)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Usuario usuario = db.Usuario.Find(id);
-            if (usuario == null)
-            {
-                return HttpNotFound();
-            }
-            return View(usuario);
-        }
-
-
         #region imagen
+
         public ActionResult GetImage(string imageName)
         {
             string imagePath = Server.MapPath("~/Content/" + imageName);
@@ -319,11 +333,34 @@ namespace WebApplicationGestorTareas.Controllers
                     using (BinaryReader br = new BinaryReader(fs))
                     {
                         byte[] imageBytes = br.ReadBytes((int)fs.Length);
-                        return File(imageBytes, "image/jpeg");
+                        string contentType = GetContentType(imagePath);
+                        return File(imageBytes, contentType);
                     }
                 }
             }
             return null;
+        }
+
+
+        private string GetContentType(string path)
+        {
+            string extension = System.IO.Path.GetExtension(path).ToLower();
+            switch (extension)
+            {
+                case ".jpg":
+                case ".jpeg":
+                    return "image/jpeg";
+                case ".png":
+                    return "image/png";
+                case ".gif":
+                    return "image/gif";
+                case ".bmp":
+                    return "image/bmp";
+                case ".tiff":
+                    return "image/tiff";
+                default:
+                    return "application/octet-stream";
+            }
         }
 
         #endregion
@@ -578,6 +615,18 @@ namespace WebApplicationGestorTareas.Controllers
 
             if (tarea.Estado == "Asignada")
             {
+                Usuario usuario = db.Usuario.Find(tarea.Usuario_Id);
+                if (usuario.Num_Tareas_EnCurso.HasValue)
+                {
+                    usuario.Num_Tareas_EnCurso = usuario.Num_Tareas_EnCurso + 1;
+                }
+                else
+                {
+                    usuario.Num_Tareas_EnCurso =  1;
+                }
+                
+                db.Entry(usuario).State = EntityState.Modified;
+
                 tarea.Estado = "En progreso";
                 db.Entry(tarea).State = EntityState.Modified;
                 db.SaveChanges();
@@ -615,7 +664,7 @@ namespace WebApplicationGestorTareas.Controllers
                 castigo.Usuario.Add(usuario);
                 db.Entry(castigo).State = EntityState.Modified;
 
-                TempData["SuccessMessage"] = "Tarea fallida. Recibes un castigo";
+                TempData["ErrorMessage"] = "Tarea fallida. Recibes un castigo";
 
             }
             else
@@ -646,6 +695,9 @@ namespace WebApplicationGestorTareas.Controllers
 
                 }
             }
+
+            usuario.Num_Tareas_EnCurso = usuario.Num_Tareas_EnCurso - 1;
+            usuario.Tarea.Remove(tarea);
 
             db.Entry(tarea).State = EntityState.Modified;
             db.Entry(usuario).State = EntityState.Modified;

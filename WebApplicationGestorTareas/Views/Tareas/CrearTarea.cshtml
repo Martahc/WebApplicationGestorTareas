@@ -16,13 +16,12 @@
 </head>
 <body style="background-color: #fff3b8;">
     <div class="container mt-5">
-        <div class="row">
+        <div class="row justify-content-center">
             <div class="col-md-6">
-                <h2>Crear Tarea <i class="fa-solid fa-thumbtack fa-bounce"></i></h2>
+                <h2 class="text-center">Crear Tarea <i class="fa-solid fa-thumbtack fa-bounce"></i></h2>
                 <hr />
 
                 <form method="post" action="@Url.Action("CrearTarea", "Tareas")">
-
                     @Html.AntiForgeryToken()
 
                     <div class="card border-5 border-end border-start">
@@ -30,18 +29,16 @@
 
                             <div class="mb-3">
                                 <label for="Nombre" class="form-label">Nombre de la tarea</label>
-                                <input type="text" id="Nombre" name="Nombre" class="form-control" required="required" maxlength="100" title=" El nombre de la tarea es obligatorio (máximo 100 caracteres).">
+                                <input type="text" id="Nombre" name="Nombre" class="form-control" required="required" maxlength="100" title="El nombre de la tarea es obligatorio (máximo 100 caracteres).">
                             </div>
 
                             <div class="mb-3">
                                 <label for="Plazo" class="form-label">Plazo de la tarea</label>
                                 <div class="input-group">
-                                    <input type="number" id="Plazo" name="Plazo" class="form-control" required="required" min="1" max="30"
-                                           title="El plazo debe ser un número positivo.">
+                                    <input type="number" id="Plazo" name="Plazo" class="form-control" required="required" min="1" max="30" title="El plazo debe ser un número positivo.">
                                     <span class="input-group-text">días</span>
                                 </div>
                             </div>
-
 
                             <div class="mb-3">
                                 <label for="Puntos" class="form-label">Puntos</label>
@@ -51,7 +48,7 @@
                             <div class="form-group row">
                                 <label for="NivelDificultad" class="col-md-4 col-form-label">Nivel de Dificultad</label>
                                 <div class="col-md-8">
-                                    <select class="form-select" id="NivelDificultad" name="NivelDificultad" required title=" El nivel de dificultad de la tarea es obligatorio.">
+                                    <select class="form-select" id="NivelDificultad" name="NivelDificultad" required title="El nivel de dificultad de la tarea es obligatorio.">
                                         <option value="" disabled selected>Seleccione un nivel de dificultad</option>
                                         <option value="Fácil">Fácil</option>
                                         <option value="Intermedio">Intermedio</option>
@@ -59,7 +56,6 @@
                                     </select>
                                 </div>
                             </div>
-
 
                             <div class="form-group row">
                                 <label for="Castigo_Id" class="col-md-2 col-form-label">Castigo</label>
@@ -71,8 +67,7 @@
                                 </div>
                             </div>
 
-
-                            <div class="form-group">
+                            <div class="form-group text-center">
                                 <button type="submit" class="btn btn-light">Crear</button>
                             </div>
 
@@ -83,7 +78,7 @@
         </div>
     </div>
 
-    <div class="container mt-3">
+    <div class="container mt-3 text-center">
         <a href="@Url.Action("VerMiPerfil","Usuarios")" class="btn btn-secondary" style="padding:4px 15px">
             <i class="fas fa-arrow-left"></i>
         </a>

@@ -85,7 +85,25 @@
             </table>
 
             @Html.PagedListPager(Model, page => Url.Action("ObtenerMisTareas",
-new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, page = page }))
+            new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, page = page }))
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <script type="text/javascript">
+                $(document).ready(function() {
+                    var errorMessage = '@Html.Raw(TempData["ErrorMessage"])';
+                    var alertPlaceholder = document.getElementById('alertPlaceholder') || document.body;
+                    var wrapper = document.createElement('div');
+                    wrapper.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+                                            ${errorMessage}
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>`;
+                    alertPlaceholder.append(wrapper);
+                });
+                </script>
+            }
 
             @if (TempData["SuccessMessage"] != null)
             {
@@ -94,7 +112,7 @@ new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, pa
                     var successMessage = '@Html.Raw(TempData["SuccessMessage"])';
                     var alertPlaceholder = document.getElementById('alertPlaceholder') || document.body;
                     var wrapper = document.createElement('div');
-                    wrapper.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+                    wrapper.innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
                                             ${successMessage}
                                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
@@ -103,8 +121,8 @@ new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, pa
                     alertPlaceholder.append(wrapper);
                 });
                 </script>
-
             }
+
 
 
         </div>

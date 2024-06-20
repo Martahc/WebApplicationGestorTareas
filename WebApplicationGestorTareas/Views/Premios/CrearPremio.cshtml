@@ -16,14 +16,13 @@
 </head>
 
 <body style="background-color: #ffb983;">
-    <div class="container  mt-5">
-        <div class="row">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
             <div class="col-md-6">
-                <h2>Crear premio <i class="fa-solid fa-trophy fa-bounce"></i></h2>
+                <h2 class="text-center">Crear premio <i class="fa-solid fa-trophy fa-bounce"></i></h2>
                 <hr />
 
                 <form asp-action="CrearPremio" method="post">
-
                     @Html.AntiForgeryToken()
 
                     <div class="card border-5 border-end border-start">
@@ -37,17 +36,16 @@
                             <div class="mb-3">
                                 <label for="Descripcion" class="form-label">Descripción del premio</label>
                                 <input type="text" id="Descripcion" name="Descripcion" class="form-control" maxlength="200" title="La descripción del premio no puede exceder los 200 caracteres.">
-
                             </div>
 
                             <div class="mb-3">
                                 <label for="Puntos" class="form-label">Puntos</label>
-                                <input type="number" id="Puntos" name="Puntos" class="form-control" required="required" min="1" max="100" title=" Los puntos deben ser un número positivo.">
+                                <input type="number" id="Puntos" name="Puntos" class="form-control" required="required" min="1" max="100" title="Los puntos deben ser un número positivo.">
                             </div>
 
                             <div class="form-group row">
-                                <div class="col-md-12">
-                                    <button type="submit" class="btn btn-outline-dark float-left">Crear</button>
+                                <div class="col-md-12 text-center">
+                                    <button type="submit" class="btn btn-outline-dark">Crear</button>
                                 </div>
                             </div>
                         </div>
@@ -57,8 +55,8 @@
         </div>
     </div>
 
-    <div class="container mt-3">
-        <a href="@Url.Action("VerMiPerfil","Usuarios")" class="btn btn-secondary" style="padding:4px 15px">
+    <div class="container mt-3 text-center">
+        <a href="@Url.Action("VerMiPerfil", "Usuarios")" class="btn btn-secondary" style="padding:4px 15px">
             <i class="fas fa-arrow-left"></i>
         </a>
     </div>
