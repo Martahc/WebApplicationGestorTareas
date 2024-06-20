@@ -333,11 +333,34 @@ namespace WebApplicationGestorTareas.Controllers
                     using (BinaryReader br = new BinaryReader(fs))
                     {
                         byte[] imageBytes = br.ReadBytes((int)fs.Length);
-                        return File(imageBytes, "image/jpeg");
+                        string contentType = GetContentType(imagePath);
+                        return File(imageBytes, contentType);
                     }
                 }
             }
             return null;
+        }
+
+
+        private string GetContentType(string path)
+        {
+            string extension = System.IO.Path.GetExtension(path).ToLower();
+            switch (extension)
+            {
+                case ".jpg":
+                case ".jpeg":
+                    return "image/jpeg";
+                case ".png":
+                    return "image/png";
+                case ".gif":
+                    return "image/gif";
+                case ".bmp":
+                    return "image/bmp";
+                case ".tiff":
+                    return "image/tiff";
+                default:
+                    return "application/octet-stream";
+            }
         }
 
         #endregion
@@ -641,7 +664,7 @@ namespace WebApplicationGestorTareas.Controllers
                 castigo.Usuario.Add(usuario);
                 db.Entry(castigo).State = EntityState.Modified;
 
-                TempData["SuccessMessage"] = "Tarea fallida. Recibes un castigo";
+                TempData["ErrorMessage"] = "Tarea fallida. Recibes un castigo";
 
             }
             else
@@ -672,6 +695,9 @@ namespace WebApplicationGestorTareas.Controllers
 
                 }
             }
+
+            usuario.Num_Tareas_EnCurso = usuario.Num_Tareas_EnCurso - 1;
+            usuario.Tarea.Remove(tarea);
 
             db.Entry(tarea).State = EntityState.Modified;
             db.Entry(usuario).State = EntityState.Modified;
