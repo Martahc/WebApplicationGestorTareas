@@ -4,7 +4,6 @@
 
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
-
 @{
     ViewBag.Title = "Index";
 }
@@ -12,24 +11,31 @@
 <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
 
 <style>
-
     body {
-        background-color: #8cba99;
+        background-color: #cce5ff; 
     }
 
     .table th, .table td {
         vertical-align: middle;
+        text-align: center;
     }
+
+
+    .btn-dark-green:hover {
+        background-color: #3d8bcb;
+        border-color: #004085;
+    }
+
 </style>
 
-<h1 class="text-center mb-4" style=" margin-top: 30px;">Perfiles <i class="fa-solid fa-users"></i></h1>
+<h1 class="text-center mb-4" style=" margin-top: 30px; color: #3d8bcb; ">Perfiles <i class="fa-solid fa-users"></i></h1>
 
-<table class="table table-hover" style=" margin-top: 30px; background-color: white; width: 900px; margin-left: auto; margin-right: auto; ">
+<table class="table table-hover" style=" margin-top: 30px; background-color: white; width: 900px; margin-left: auto; margin-right: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px;">
     <thead>
         <tr>
-            <th scope="col" style="width: 20%;">Imagen</th>
-            <th scope="col" style="width: 55%;">Nombre</th>
-            <th scope="col" style="width: 25%;">Acciones</th>
+            <th scope="col" style="width: 20%; background-color: #3d8bcb; color: white;">Imagen</th>
+            <th scope="col" style="width: 55%; background-color: #3d8bcb; color: white;">Nombre</th>
+            <th scope="col" style="width: 25%; background-color: #3d8bcb; color: white;">Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -37,20 +43,21 @@
         {
             <tr>
                 <td>
-                    <img src="@Url.Action("GetImage", "Usuarios", new { imageName = item.Imagen })" alt="Imagen del usuario" class="img-thumbnail" style=" width: 100px; height: auto;">
+                    <img src="@Url.Action("GetImage", "Usuarios", new { imageName = item.Imagen })" alt="Imagen del usuario" class="img-thumbnail" style=" width: 100px; height: auto; border-radius: 50%;">
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Nombre)
                 </td>
                 <td>
-                    <a href="@Url.Action("Detalles", "Usuarios", new { id = item.Id })" class="btn btn-dark-green" style=" background-color: #276a39; border-color: #204d29; color: white;">Detalles</a>
-                    <a href="@Url.Action("EliminarPerfil", "Usuarios", new { idUsuario = item.Id })" class="btn btn-danger" style=" color: white;">Eliminar <i class="fas fa-trash"></i></a>
+                    <a href="@Url.Action("Detalles", "Usuarios", new { id = item.Id })" class="btn" style=" background-color: #3d8bcb; color: white;">Detalles</a>
+                    <a href="@Url.Action("EliminarPerfil", "Usuarios", new { idUsuario = item.Id })" class="btn btn-danger" style="color: white;">Eliminar <i class="fas fa-trash"></i></a>
                 </td>
-
             </tr>
         }
     </tbody>
 </table>
 
-@Html.PagedListPager(Model, page => Url.Action("ObtenerUsuarios",
+<div class="paged-list-pager" style=" display: flex; justify-content: center; margin-top: 20px;">
+    @Html.PagedListPager(Model, page => Url.Action("ObtenerUsuarios",
     new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+</div>
