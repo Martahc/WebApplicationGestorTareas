@@ -8,6 +8,7 @@
     ViewBag.Title = "Index";
 }
 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -16,34 +17,58 @@
 
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" rel="stylesheet">
+    <style>
+        .content-wrapper {
+            background-color: #ffffff;
+            padding: 20px;
+            margin-top: 30px;
+        }
 
-   
+        .table thead th {
+            background-color: #f0616b;
+            color: #ffffff;
+        }
+    </style>
 </head>
-<body style="background-color: #f0616b;">
-    <div class="container mt-5">
-        <div class="castigos-profile" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2>Castigos <i class="fas fa-handcuffs ml-2"></i></h2>
-            <a href="@Url.Action("VerMiPerfil", "Usuarios")" class="btn btn-dark">Volver a mi perfil <i class="fas fa-arrow-right ml-2"></i></a>
-        </div>
+<body style="background-color: #f0616b">
+    <div class="container mt-10">
+        <div class="content-wrapper">
+            <div class="header d-flex justify-content-between align-items-center" style="margin-bottom: 40px;">
+                <h2 style="color: black; margin-top:30px">Castigos  <i class="fas fa-handcuffs ml-2"></i></h2>
+            </div>
 
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <tbody>
-                    @foreach (var item in Model)
-                    {
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
                         <tr>
-                            <td>@item.Nombre</td>
-                            <td>@item.Descripcion</td>
-                            <td>@item.Duracion días</td>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Duración (días)</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-            @Html.PagedListPager(Model, page => Url.Action("ObtenerMisCastigos",
-                new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, page = page }))
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Nombre</td>
+                                <td>@item.Descripcion</td>
+                                <td>@item.Duracion días</td>
+                            </tr>
+                        }
+                        
+                    </tbody>
+                </table>
+                @Html.PagedListPager(Model, page => Url.Action("ObtenerMisCastigos",
+                    new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, page = page }))
+            </div>
+
+            <div class="footer-btn" style="text-align: right; margin-top: 20px;">
+                <a href="@Url.Action("VerMiPerfil", "Usuarios")" class="btn btn-dark" style="background-color: #343a40; border-color: #343a40;">Volver a mi perfil <i class="fas fa-arrow-right ml-2"></i></a>
+            </div>
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
