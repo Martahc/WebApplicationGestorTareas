@@ -1,72 +1,108 @@
 ﻿<!DOCTYPE html>
 <html>
+
+
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Mi aplicación ASP.NET</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-</head>
-<body>
     <script defer src='https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js'></script>
     <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" crossorigin="anonymous">
 
-    <nav class="navbar navbar-expand-lg bg-light">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-custom">
         <div class="container">
-            @Html.ActionLink("Nombre de la aplicación", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Alternar navegación" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Inicio", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                <ul class="nav nav-tabs navbar-left" id="myTab" role="tablist">
 
                     @if (Session["UserID"] != null)
                     {
-                        <li>@Html.ActionLink("Mi perfil", "VerMiPerfil", "Usuarios", new { area = "" }, new { @class = "nav-link" })</li>
-
-                        <li>@Html.ActionLink("Mis tareas", "ObtenerMisTareas", "Usuarios", new { area = "" }, new { @class = "nav-link" })</li>
-
+                        <li class="nav-item" role="presentation">
+                            <button onclick="location.href='/Usuarios/VerMiPerfil';" class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false"
+                                    style="color: black">
+                                <i class="fa-solid fa-user"></i> Mi Perfil
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button onclick="location.href='/Usuarios/ObtenerMisTareas';" class="nav-link" id="task-tab" data-bs-toggle="tab" data-bs-target="#task-tab-pane" type="button" role="tab" aria-controls="task-tab-pane" aria-selected="false"
+                                    style="color: black">
+                                <i class="fa-solid fa-thumbtack"></i>  Mis Tareas
+                            </button>
+                        </li>
 
                         if (Session["UserRol"].ToString() == "Admin")
                         {
-                            <li>@Html.ActionLink("Tareas", "ObtenerTareas", "Tareas", new { area = "" }, new { @class = "nav-link" })</li>
-                            <li>@Html.ActionLink("Perfiles", "ObtenerUsuarios", "Usuarios", new { area = "" }, new { @class = "nav-link" })</li>
-                            <li class='nav-item dropdown'>
-                                <a class='nav-link dropdown-toggle' href='#' id='navbarDropdownAbout' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Crear</a>
-                                <div class='dropdown-menu' aria-labelledby='navbarDropdownAbout'>
-                                    <a class="nav-link" href="@Url.Action("CrearPremio", "Premios")">Crear Premio</a>
-                                    <a class="nav-link" href="@Url.Action("CrearCastigo", "Castigos")">Crear Castigo</a>
-                                    <a class="nav-link" href="@Url.Action("CrearTarea", "Tareas")">Crear Tarea</a>
 
-                                </div>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false" style="color: black"> <i class="fa-solid fa-list-check"></i> Tareas</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/Tareas/ObtenerTareas"><i class="fa-solid fa-list-check"></i>  Todas </a></li>
+                                    <li><a class="dropdown-item" href="/Tareas/ObtenerTareasNoAsignadas"> <i class="fa-solid fa-user-xmark"></i> No asignadas</a></li>
+                                    <li><a class="dropdown-item" href="/Tareas/ObtenerTareasAsignadas"> <i class="fa-solid fa-user-tag"></i> Asignadas</a></li>
+                                    <li><a class="dropdown-item" href="/Tareas/ObtenerTareasCompletadas"> <i class="fa-solid fa-user-check"></i> Completadas</a></li>
+                                </ul>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
+                                <button onclick="location.href='/Usuarios/ObtenerUsuarios';" class="nav-link" id="profiles-tab" data-bs-toggle="tab" data-bs-target="#profiles-tab-pane" type="button" role="tab" aria-controls="profiles-tab-pane" aria-selected="false"
+                                        style="color: black">
+                                    <i class="fa-solid fa-users"></i> Perfiles
+                                </button>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false" style="color: black"> <i class="fa-solid fa-plus"></i> Crear</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/Premios/CrearPremio"> Premio</a></li>
+                                    <li><a class="dropdown-item" href="/Castigos/CrearCastigo">Castigo</a></li>
+                                    <li><a class="dropdown-item" href="/Tareas/CrearTarea">Tarea</a></li>
+                                </ul>
                             </li>
                         }
-                        <li>@Html.ActionLink("Logout", "Logout", "Usuarios", new { area = "" }, new { @class = "nav-link" })</li>
-
-                    }
-                    else
-                    {
-                        <li>@Html.ActionLink("Login", "Login", "Usuarios", new { area = "" }, new { @class = "nav-link" })</li>
-                        <li>@Html.ActionLink("Registrarse", "Registro", "Usuarios", new { area = "" }, new { @class = "nav-link" })</li>
-
 
                     }
                 </ul>
+                <ul class="nav nav-tabs navbar-right" id="myTab" role="tablist">
+                    @if (Session["UserID"] != null)
+                    {
+                        <li class="nav-item" role="presentation">
+                            <button onclick="location.href='/Usuarios/Logout';" class="nav-link" id="logout-tab" data-bs-toggle="tab" data-bs-target="#logout-tab-pane" type="button" role="tab" aria-controls="logout-tab-pane" aria-selected="false"
+                                    style="color: black">
+                                <i class="fa-solid fa-power-off"></i> Logout
+                            </button>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item" role="presentation">
+                            <button onclick="location.href='/Usuarios/Login';" class="nav-link" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-tab-pane" type="button" role="tab" aria-controls="login-tab-pane" aria-selected="false"
+                                    style="color: black">
+                                <i class="fa-solid fa-right-to-bracket"></i> Login
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button onclick="location.href='/Usuarios/Registro';" class="nav-link" id="registro-tab" data-bs-toggle="tab" data-bs-target="#registro-tab-pane" type="button" role="tab" aria-controls="registro-tab-pane" aria-selected="false"
+                                    style="color: black">
+                                <i class="fa-solid fa-user-plus"></i> Registro
+                            </button>
+                        </li>
+                    }
+
+                </ul>
+
             </div>
         </div>
     </nav>
 
 
-
     <div class="container body-content">
         @RenderBody()
         <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Mi aplicación ASP.NET</p>
-        </footer>
     </div>
 
     @Scripts.Render("~/bundles/jquery")
@@ -74,4 +110,3 @@
     @RenderSection("scripts", required: false)
 </body>
 </html>
-
